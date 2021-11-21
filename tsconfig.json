@@ -1,0 +1,16 @@
+{
+	"compilerOptions": {
+		"jsx": "react",
+		"target": "ESNext",
+		"module": "ESNext",
+		"lib": ["ESNext", "DOM"],
+		"moduleResolution": "Node",
+		"isolatedModules": true,
+		"useDefineForClassFields": true,
+		"allowSyntheticDefaultImports": true,
+		"strict": true,
+		"noEmit": true,
+		"experimentalDecorators": true
+	},
+	"include": ["./src"]
+}
