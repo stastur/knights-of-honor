@@ -18,12 +18,6 @@ export interface Bonus {
 	value: number;
 }
 
-export interface Resource {
-	amount: number;
-	limit: number;
-	restoration: number;
-}
-
 export interface Building {
 	id: BuildingId;
 

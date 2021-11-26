@@ -2,20 +2,15 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
 
-import "./styles.css";
-import { ProvinceProvider, ProvinceView } from "./province/ProvinceView";
-// import { App } from "./App";
-
-import "./game/province";
-import { Brest } from "./game/province";
+import { ProvinceView } from "./province/ProvinceView";
 import { store } from "./province/store";
+
+import "./styles.css";
 
 ReactDOM.render(
 	<React.StrictMode>
 		<Provider store={store}>
-			<ProvinceProvider province={Brest}>
-				<ProvinceView />
-			</ProvinceProvider>
+			<ProvinceView />
 		</Provider>
 	</React.StrictMode>,
 	document.getElementById("app")

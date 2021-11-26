@@ -1,4 +1,5 @@
-import React, { createContext, ReactNode, useContext, useState } from "react";
+import React, { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { IconType } from "react-icons";
 import {
 	GiOpenBook,
@@ -9,138 +10,48 @@ import {
 	GiHumanPyramid,
 	GiLogging,
 } from "react-icons/gi";
-
-import { buildings as allBuildings, buildings } from "../game/buildings";
-import { BonusId, Building, Province, ResourceId } from "../game/types";
+import { TiTimesOutline } from "react-icons/ti";
 import cn from "classnames";
-import { Brest } from "../game/province";
 
-interface ProvinceContextInterface {
-	province: Province;
-	api: {
-		buildings: {
-			startConstruction: (b: Building) => void;
-			destroy: (b: Province["buildings"][number]) => void;
+import * as buildings from "../game/buildings";
+import { Province } from "../game/types";
+import { actions, selectors } from "./store";
+import { getConnectedBuildings, isConstructionAvailable } from "./utils";
 
-			isConstructionAvailable: () => boolean;
-			isAvailable: (b: Building) => boolean;
-
-			getAvailable: () => Building[];
-			getUnderConstruction: () => Province["buildings"];
-		};
-	};
-}
-
-const ProvinceContext = createContext({} as ProvinceContextInterface);
-
-const useProvince = () => useContext(ProvinceContext);
-
-export const ProvinceProvider = ({
-	province,
-	children,
-}: {
-	province: Province;
-	children: ReactNode;
-}): JSX.Element => {
-	const [state, setState] = useState(province);
-
-	const isAvailable: ProvinceContextInterface["api"]["buildings"]["isAvailable"] =
-		(building) => {
-			const finishedBuildingIds = state.buildings
-				.filter(({ status }) => status === "construction-finished")
-				.map(({ building: { id } }) => id);
-
-			if (state.buildings.find(({ building: b }) => b === building)) {
-				return false;
-			}
-
-			return building.requirements.every((requirement) =>
-				[...province.features, ...finishedBuildingIds].includes(requirement)
-			);
-		};
-
-	const getAvailable: ProvinceContextInterface["api"]["buildings"]["getAvailable"] =
-		() => {
-			return buildings.filter(isAvailable);
-		};
-
-	const getUnderConstruction: ProvinceContextInterface["api"]["buildings"]["getUnderConstruction"] =
-		() => {
-			return state.buildings.filter(
-				({ status }) => status === "under-construction"
-			);
-		};
-
-	const isConstructionAvailable: ProvinceContextInterface["api"]["buildings"]["isConstructionAvailable"] =
-		() => {
-			const buildingsUnderConstruction = getUnderConstruction();
-
-			return state.bonuses.workers.value > buildingsUnderConstruction.length;
-		};
-
-	const startConstruction: ProvinceContextInterface["api"]["buildings"]["startConstruction"] =
-		(building) => {
-			if (!isConstructionAvailable()) {
-				return;
-			}
-
-			state.buildings.push({
-				status: "under-construction",
-				progress: 0,
-				building,
-			});
-
-			setState({ ...state });
-		};
-
-	const destroy: ProvinceContextInterface["api"]["buildings"]["destroy"] = (
-		building
-	) => {
-		state.buildings = state.buildings.filter((b) => b !== building);
-
-		setState({ ...state });
-	};
-
-	return (
-		<ProvinceContext.Provider
-			value={{
-				province: state,
-				api: {
-					buildings: {
-						startConstruction,
-						destroy,
-						isAvailable,
-						isConstructionAvailable,
-						getAvailable,
-						getUnderConstruction,
-					},
-				},
-			}}
-		>
-			{children}
-		</ProvinceContext.Provider>
-	);
-};
-
-const BonusIcons: { [K in BonusId]: IconType } = {
+const BonusIcons: { [K in keyof Province["baseProduction"]]: IconType } = {
 	workers: GiHammerNails,
 	gold: GiTwoCoins,
 	books: GiOpenBook,
 	piety: GiPopeCrown,
+	food: GiWheat,
 };
 
+const buildingsList = Object.values(buildings);
+
 export const ProvinceView = (): JSX.Element => {
-	// const {
-	// 	province: { id, resources, bonuses, features, buildings },
-	// 	api,
-	// } = useProvince();
+	const dispatch = useDispatch();
 
-	const { id, features, buildings } = useRecoilValue(provinceState);
-	const bonuses = useRecoilValue(provinceBonusesSelector);
-	const resources = useRecoilValue(provinceResourcesSelector);
+	const id = useSelector(selectors.province.getProvinceId);
+	const features = useSelector(selectors.province.getFeatures);
 
-	const [menuOpened, setMenuOpened] = React.useState(false);
-	const [buildingsListOpened, setBuildingsListOpened] = React.useState(false);
+	const foodStorage = useSelector(selectors.resources.getFoodStorage);
+	const population = useSelector(selectors.resources.getPopulation);
+	const production = useSelector(selectors.resources.getProduction);
+
+	const buildingsNumber = useSelector(selectors.buildings.getBuildingsNumber);
+
+	const completedBuildings = useSelector(
+		selectors.buildings.getCompletedBuildings
+	);
+	const buildingsUnderConstruction = useSelector(
+		selectors.buildings.getUnderConstruction
+	);
+
+	const [buildingsToDestroy, setBuildingsToDestroy] = useState<
+		Province["buildings"]
+	>([]);
+	const [menuOpened, setMenuOpened] = useState(false);
+	const [buildingsListOpened, setBuildingsListOpened] = useState(false);
 
 	const buildingLimit = 15;
 
@@ -168,58 +79,104 @@ export const ProvinceView = (): JSX.Element => {
 								hidden: !buildingsListOpened,
 							})}
 						>
-							{allBuildings.map((b) => (
-								<span
-									key={b.id}
-									className={cn({
-										"bg-red-200": !api.buildings.isAvailable(b),
-										"bg-green-200": api.buildings.isAvailable(b),
-									})}
-									onClick={() => api.buildings.startConstruction(b)}
-								>
-									{b.id}
-								</span>
-							))}
+							{buildingsList.map((b) => {
+								const canBeConstructed = isConstructionAvailable(b, {
+									availableWorkers:
+										production.workers - buildingsUnderConstruction.length,
+									completedBuildings,
+									buildingsUnderConstruction,
+									features,
+								});
+
+								return (
+									<span
+										key={b.id}
+										className={cn({
+											"bg-red-200 cursor-not-allowed": !canBeConstructed,
+											"bg-green-200 cursor-pointer": canBeConstructed,
+										})}
+										onClick={() =>
+											canBeConstructed &&
+											dispatch(actions.buildings.startConstruction(b))
+										}
+										title={
+											b.bonuses
+												.map(
+													({ id, value }) =>
+														`${id}: ${value > 0 ? "+" + value : value}`
+												)
+												.join(", ") +
+											"\n" +
+											b.products.join(", ")
+										}
+									>
+										{b.id}
+									</span>
+								);
+							})}
 						</aside>
 
-						{buildings.map((b) => (
-							<span className="border" key={b.building.id}>
-								{b.building.id}
+						{completedBuildings.map((b) => (
+							<span
+								className={cn("group border relative flex justify-between", {
+									"bg-red-200": buildingsToDestroy.includes(b),
+								})}
+								key={b.building.id}
+							>
+								<span>{b.building.id}</span>
+
+								<button
+									className="group-hover:visible invisible h-full"
+									onClick={() => dispatch(actions.buildings.destroy(b))}
+									onMouseOver={() =>
+										setBuildingsToDestroy(
+											getConnectedBuildings(
+												completedBuildings,
+												b.building.id
+											).concat(b)
+										)
+									}
+									onMouseLeave={() => setBuildingsToDestroy([])}
+								>
+									<TiTimesOutline className="h-full w-full" />
+								</button>
 							</span>
 						))}
 
 						{Array.from({
-							length: buildingLimit - buildings.length,
+							length: buildingLimit - buildingsNumber,
 						}).map((_, index) => (
 							<span
-								onClick={() =>
-									(api.buildings.isConstructionAvailable() ||
-										buildingsListOpened) &&
-									setBuildingsListOpened((f) => !f)
-								}
-								className={cn("border", {
-									"cursor-pointer": api.buildings.isConstructionAvailable(),
-								})}
 								key={index}
+								onClick={() => setBuildingsListOpened((f) => !f)}
+								className="border cursor-pointer"
 							/>
 						))}
 					</section>
 
 					<section aria-label="In progress">
 						<div>
-							{api.buildings.getUnderConstruction().map((b) => (
-								<div key={b.building.id}>
-									<label htmlFor={b.building.id}>
-										{b.building.id} ({b.progress}/{b.building.workers})
-									</label>
-
+							{buildingsUnderConstruction.map((b) => (
+								<div key={b.building.id} className="flex items-center">
 									<div>
-										<progress
-											id={b.building.id}
-											max={b.building.workers}
-											value={b.progress}
-										/>
+										<label htmlFor={b.building.id}>
+											{b.building.id} ({b.progress}/{b.building.workers})
+										</label>
+
+										<div>
+											<progress
+												id={b.building.id}
+												max={b.building.workers}
+												value={b.progress}
+											/>
+										</div>
 									</div>
+									<button
+										onClick={() => dispatch(actions.buildings.destroy(b))}
+										className="h-6"
+									>
+										<TiTimesOutline className="h-full w-full" />
+									</button>
 								</div>
 							))}
 						</div>
@@ -245,47 +202,43 @@ export const ProvinceView = (): JSX.Element => {
 				<div>
 					<div>
 						<label htmlFor="people">
-							<GiHumanPyramid className="inline" /> ({resources.people.amount}/
-							{resources.people.limit})
+							<GiHumanPyramid className="inline" /> ({population.value}/
+							{population.limit})
 						</label>
 
 						<meter
 							id="people"
 							min={0}
-							max={resources.people.limit}
-							value={resources.people.amount}
+							max={population.limit}
+							value={population.value}
 							className="block w-full"
 						/>
 					</div>
 
 					<div className="grid grid-cols-3 gap-2">
-						{Object.entries(bonuses).map(([bonusId, { value }]) => {
-							const BonusIcon = BonusIcons[bonusId as keyof typeof bonuses];
+						{Object.entries(production).map(([resourceId, value]) => {
+							const BonusIcon =
+								BonusIcons[resourceId as keyof typeof production];
 
 							return (
-								<span key={bonusId}>
+								<span key={resourceId}>
 									<BonusIcon className="inline" /> {value}
 								</span>
 							);
 						})}
-
-						<span>
-							<GiWheat className="inline" />{" "}
-							{resources.food.restoreRate * resources.food.amount}
-						</span>
 					</div>
 
 					<div>
 						<label htmlFor="food">
-							<GiWheat className="inline" /> ({resources.food.amount}/
-							{resources.food.limit})
+							<GiWheat className="inline" /> ({foodStorage.value}/
+							{foodStorage.limit})
 						</label>
 
 						<meter
 							id="food"
 							min={0}
-							max={resources.food.limit}
-							value={resources.food.amount}
+							max={foodStorage.limit}
+							value={foodStorage.value}
 							className="block w-full"
 						/>
 					</div>
