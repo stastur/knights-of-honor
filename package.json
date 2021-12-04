@@ -7,6 +7,9 @@
 		"serve": "vite preview"
 	},
 	"devDependencies": {
+		"@types/delaunator": "^3.0.0",
+		"@types/hull.js": "^1.0.1",
+		"@types/poisson-disk-sampling": "^2.2.0",
 		"@types/react": "^17.0.27",
 		"@types/react-dom": "^17.0.9",
 		"@types/topojson-client": "^3.1.0",
@@ -22,10 +25,14 @@
 	"dependencies": {
 		"@reduxjs/toolkit": "^1.6.2",
 		"classnames": "^2.3.1",
+		"delaunator": "^5.0.0",
+		"hull.js": "^1.0.2",
+		"poisson-disk-sampling": "^2.2.2",
 		"react": "^17.0.2",
 		"react-dom": "^17.0.2",
 		"react-icons": "^4.3.1",
 		"react-redux": "^7.2.6",
+		"simplex-noise": "^3.0.0",
 		"topojson-client": "^3.1.0"
 	}
 }
