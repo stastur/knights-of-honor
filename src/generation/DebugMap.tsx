@@ -17,7 +17,7 @@ export const DebugMap = (): JSX.Element => {
 
 	useEffect(() => {
 		if (canvasRef.current) {
-			hexagonalMap.drawMesh(canvasRef.current);
+			hexagonalMap.drawMesh(canvasRef.current, { type: "elevation" });
 			hexagonalMap.colorCountries(canvasRef.current);
 		}
 

@@ -6,21 +6,6 @@ interface Point {
 	y: number;
 }
 
-interface Cell {
-	vertices: Point[];
-	center: Point;
-}
-
-interface Hexagon extends Cell {
-	temperature: number;
-	elevation: number;
-}
-
-interface Region {
-	center: Hexagon;
-	land: Hexagon[];
-}
-
 const tan30 = Math.tan(Math.PI / 6);
 const cos30 = Math.cos(Math.PI / 6);
 const angle = Math.PI / 3;
@@ -62,6 +47,8 @@ export class HexagonalMap {
 
 		this.initializeRegions();
 		this.initializeCountries();
+
+		this.distortMesh();
 	}
 
 	static isGround(elevation: number) {
@@ -175,6 +162,22 @@ export class HexagonalMap {
 		}
 	};
 
+	distortMesh() {
+		this.meshPoints.forEach((mp) => {
+			const noise = this.normalizedNoise({
+				x: mp.x,
+				y: mp.y,
+				layers: 2,
+				details: 1,
+			});
+
+			const distortion = (noise - 0.5) * this.options.tileSize * tan30;
+
+			mp.x += distortion;
+			mp.y += distortion;
+		});
+	}
+
 	findClosest<T extends number>(
 		target: Point,
 		figures: T[],
@@ -187,18 +190,6 @@ export class HexagonalMap {
 		);
 
 		return closest;
-	}
-
-	getAdjacentRegions(r: Region, rs: Region[]) {
-		const neighbors = [...rs]
-			.sort(
-				({ center: c1 }, { center: c2 }) =>
-					distance(r.center.center, c1.center) -
-					distance(r.center.center, c2.center)
-			)
-			.slice(0, 9);
-
-		return neighbors.filter(({ land }) => land.some((h) => r.land.includes(h)));
 	}
 
 	getHexagonVertices(index: number) {
