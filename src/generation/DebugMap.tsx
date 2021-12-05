@@ -17,25 +17,11 @@ export const DebugMap = (): JSX.Element => {
 
 	useEffect(() => {
 		if (canvasRef.current) {
-			hexagonalMap.drawHexagons(
-				canvasRef.current,
-				hexagonalMap.hexagons,
-				({ temperature: t, elevation: e }) => {
-					if (HexagonalMap.isGround(e)) {
-						return `hsl(150 , 100%, 70%)`;
-					}
-
-					return `hsl(210, 100%, 70%)`;
-
-					return `rgb(${255 * e}, ${255 * e}, ${255 * e})`;
-
-					return `hsl(${200 - 200 * t}, 100%, 70%)`;
-				}
-			);
-
-			const regions = hexagonalMap.getRegions();
-			hexagonalMap.colorRegions(canvasRef.current, regions);
+			hexagonalMap.drawMesh(canvasRef.current);
+			hexagonalMap.colorCountries(canvasRef.current);
 		}
+
+		return () => canvasRef.current?.getContext("2d")?.clearRect(0, 0, w, h);
 	}, [hexagonalMap, threshold]);
 
 	return (
