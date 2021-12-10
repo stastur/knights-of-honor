@@ -10,7 +10,7 @@ export const DebugMap = (): JSX.Element => {
 
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 	const [seed, setSeed] = React.useState("knights of honor 2");
-	const [tileSize, setTileSize] = React.useState(w / 200);
+	const [tileSize, setTileSize] = React.useState(30);
 	const [threshold, setThreshold] = React.useState(0.5);
 
 	const hexagonalMap = new HexagonalMap({ w, h, tileSize, seed });
