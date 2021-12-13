@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useLayoutEffect, useRef } from "react";
 import { HexagonalMap } from "./hexagonalMap";
 
 export const DebugMap = (): JSX.Element => {
@@ -10,19 +10,23 @@ export const DebugMap = (): JSX.Element => {
 
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 	const [seed, setSeed] = React.useState("knights of honor 2");
-	const [tileSize, setTileSize] = React.useState(30);
+	const [tile, setTile] = React.useState(30);
 	const [threshold, setThreshold] = React.useState(0.5);
 
-	const hexagonalMap = new HexagonalMap({ w, h, tileSize, seed });
+	const hexagonalMap = new HexagonalMap({ w, h, tile, seed });
 
 	useEffect(() => {
 		if (canvasRef.current) {
 			hexagonalMap.drawMesh(canvasRef.current, { type: "elevation" });
-			hexagonalMap.colorCountries(canvasRef.current);
+			hexagonalMap.colorRegions(canvasRef.current);
 		}
 
 		return () => canvasRef.current?.getContext("2d")?.clearRect(0, 0, w, h);
 	}, [hexagonalMap, threshold]);
+
+	useLayoutEffect(() => {
+		document.getElementById("svg")?.appendChild(hexagonalMap.toSvg());
+	});
 
 	return (
 		<div className="flex w-full h-full">
@@ -38,11 +42,11 @@ export const DebugMap = (): JSX.Element => {
 
 					<input
 						type="number"
-						value={tileSize}
+						value={tile}
 						min={5}
 						max={100}
 						id="tileSize"
-						onChange={(e) => setTileSize(Number(e.target.value))}
+						onChange={(e) => setTile(Number(e.target.value))}
 					/>
 				</div>
 

@@ -1,14 +1,18 @@
 import SimplexNoise from "simplex-noise";
-import { getRandomColor } from "../utils/getRandomColor";
+
 import { range } from "../utils/range";
 
-interface Point {
+export interface Point {
 	x: number;
 	y: number;
 }
 
-const tan30 = Number(Math.tan(Math.PI / 6).toFixed(3));
-const cos30 = Number(Math.cos(Math.PI / 6).toFixed(3));
+interface Region {
+	hexagons: Point[][];
+	capital: Point;
+}
+
+const cos30 = Math.sqrt(3) * 0.5;
 
 const numRegions = 200;
 const numCountries = 60;
@@ -21,8 +25,6 @@ const byY = (p1: Point, p2: Point) => p1.y - p2.y || p1.x - p2.x;
 
 export class HexagonalMap {
 	_points: Point[] = [];
-	_rows = 0;
-	_cols = 0;
 
 	centers: number[] = [];
 	meshPoints: number[] = [];
@@ -41,7 +43,7 @@ export class HexagonalMap {
 		private options: {
 			w: number;
 			h: number;
-			tileSize: number;
+			tile: number;
 			seed: string;
 		}
 	) {
@@ -56,8 +58,6 @@ export class HexagonalMap {
 		this.initializeCountries();
 
 		this.distortMesh();
-
-		console.log(this);
 	}
 
 	static isGround(elevation: number) {
@@ -102,7 +102,7 @@ export class HexagonalMap {
 		this._points = points;
 		this.centers = this._points.map((_, index) => index);
 
-		const width = this.options.tileSize;
+		const width = this.options.tile;
 		const height = width / cos30;
 
 		const r = 0.5 * width;
@@ -209,14 +209,14 @@ export class HexagonalMap {
 		});
 	}
 
-	oppositeEdge(e: number) {
-		return (e + 3) % 6;
-	}
-
 	distortMesh() {
-		this.meshPoints.forEach((pIndex) => {
-			const mp = this._points[pIndex];
+		const pointsToDistort: Point[] = [];
 
+		for (let i = 0; i < this.regions.length; i++) {
+			pointsToDistort.push(...this.getBorderPoints(i));
+		}
+
+		pointsToDistort.forEach((mp) => {
 			const noise = this.normalizedNoise({
 				x: mp.x,
 				y: mp.y,
@@ -224,11 +224,38 @@ export class HexagonalMap {
 				details: 1,
 			});
 
-			const distortion = (noise - 0.5) * this.options.tileSize * tan30;
+			const distortion = (noise - 0.5) * this.options.tile * 0.5;
 
 			mp.x += distortion;
 			mp.y += distortion;
 		});
+	}
+
+	public mapRegions = <R>(
+		callback: (value: Region, index: number, regions: Region[]) => R
+	) => {
+		return this.regions
+			.map((centers) => ({
+				capital: this._points[centers[0]],
+				hexagons: centers.map((c) => this.getHexagonVertices(c)),
+			}))
+			.map(callback);
+	};
+
+	public mapCountries = <R>(
+		callback: (value: number[], index: number, countries: number[][]) => R
+	) => {
+		return this.countries.map(callback);
+	};
+
+	getBorderPoints(rIndex: number) {
+		return this.regions[rIndex]
+			.flatMap((cIndex) => this.getHexagonMeshIndices(cIndex))
+			.filter(
+				(meshPoint, _, arr) =>
+					arr.indexOf(meshPoint) === arr.lastIndexOf(meshPoint)
+			)
+			.map((mp) => this._points[mp]);
 	}
 
 	findClosest<T extends number>(
@@ -246,17 +273,17 @@ export class HexagonalMap {
 	}
 
 	getHexagonMeshIndices(index: number) {
-		return [0, 1, 2, 3, 4, 5].map((vIndex) => 6 * index + vIndex);
-	}
-
-	getHexagonVertices(index: number) {
-		return this.getHexagonMeshIndices(index).map(
-			(i) => this._points[this.meshPoints[i]]
+		return [0, 1, 2, 3, 4, 5].map(
+			(vIndex) => this.meshPoints[6 * index + vIndex]
 		);
 	}
 
+	getHexagonVertices(index: number) {
+		return this.getHexagonMeshIndices(index).map((i) => this._points[i]);
+	}
+
 	createCenters() {
-		const width = this.options.tileSize;
+		const width = this.options.tile;
 		const height = width / cos30;
 
 		const r = 0.5 * width;
@@ -306,154 +333,5 @@ export class HexagonalMap {
 		}
 
 		return 0.5 * (noiseSum / layers + 1);
-	}
-
-	getBounding(centers: number[]): Point[] {
-		const pointOccurrences: Record<number, number> = Object.create(null);
-
-		centers
-			.flatMap((c) => this.getHexagonMeshIndices(c))
-			.forEach((mp) => {
-				pointOccurrences[mp] = (pointOccurrences[mp] || 0) + 1;
-			});
-
-		return Object.entries(pointOccurrences)
-			.filter(([_, times]) => times <= 2)
-			.map(([mp]) => this._points[Number(mp)])
-			.sort((p1, p2) => p1.x - p2.x + p1.y - p2.y);
-	}
-
-	createSVGPath(points: Point[]) {
-		return (
-			points
-				.map(({ x, y }, index) => {
-					let path = "L " + [x, y].join();
-
-					if (index === 0) {
-						path = path.replace("L", "M");
-					}
-
-					return path;
-				})
-				.join("\n") + " Z"
-		);
-	}
-
-	toSvg() {
-		const root = document.createElement("svg");
-		root.setAttribute("viewBox", `0 0 ${this.options.w} ${this.options.h}`);
-		root.setAttribute(
-			"style",
-			`width:${this.options.w}px; height:${this.options.h}px`
-		);
-
-		const regions = this.regions.slice(-1).map((centers) => {
-			const svgPath = this.createSVGPath(this.getBounding(centers));
-
-			const regionSvg = document.createElement("path");
-			regionSvg.setAttribute("d", svgPath);
-			regionSvg.setAttribute("fill", getRandomColor());
-
-			return regionSvg;
-		});
-
-		root.append(...regions);
-
-		return root;
-	}
-
-	createCircle(p: Point) {
-		const circle = new Path2D();
-		circle.ellipse(p.x, p.y, 2, 2, Math.PI * 2, 0, Math.PI * 2);
-
-		return circle;
-	}
-
-	createPolygon(vertices: Point[]) {
-		return new Path2D(this.createSVGPath(vertices));
-	}
-
-	drawMesh(
-		canvas: HTMLCanvasElement,
-		options: {
-			withPoints?: boolean;
-			type?: "temperature" | "elevation";
-		} = {}
-	) {
-		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-		const ctx = canvas.getContext("2d")!;
-
-		this.centers.forEach((_, index) => {
-			const vertices = this.getHexagonVertices(index);
-			const temperature = this.temperature[index];
-			const elevation = this.elevation[index];
-
-			const hexagon = this.createPolygon(vertices);
-
-			switch (options.type) {
-				case "temperature":
-					ctx.fillStyle = `hsl(${200 - 200 * temperature}, 100%, 70%)`;
-					ctx.fill(hexagon);
-					break;
-				case "elevation":
-					ctx.fillStyle = `hsl(${
-						HexagonalMap.isGround(elevation) ? 150 : 200
-					}, 100%, 70%)`;
-					ctx.fill(hexagon);
-					break;
-				default:
-					ctx.strokeStyle = "hsl(200, 100%, 70%)";
-					ctx.stroke(hexagon);
-					break;
-			}
-		});
-
-		options.withPoints && this.drawMeshPoints(canvas);
-	}
-
-	drawMeshPoints(canvas: HTMLCanvasElement) {
-		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-		const ctx = canvas.getContext("2d")!;
-
-		ctx.fillStyle = "#00f";
-		this.meshPoints.forEach((p) => {
-			ctx.fill(this.createCircle(this._points[p]));
-		});
-	}
-
-	colorCountries(canvas: HTMLCanvasElement) {
-		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-		const ctx = canvas.getContext("2d")!;
-
-		this.countries.forEach((c) => {
-			ctx.fillStyle = getRandomColor();
-
-			c.forEach((rIndex) => {
-				const region = this.regions[rIndex];
-
-				region.forEach((centerIndex) => {
-					const vertices = this.getHexagonVertices(centerIndex);
-
-					ctx.fill(this.createPolygon(vertices));
-				});
-			});
-		});
-	}
-
-	colorRegions(canvas: HTMLCanvasElement) {
-		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-		const ctx = canvas.getContext("2d")!;
-
-		this.regions.forEach((r) => {
-			const color = getRandomColor();
-
-			r.forEach((centerIndex) => {
-				const vertices = this.getHexagonVertices(centerIndex);
-
-				ctx.fillStyle = color;
-				ctx.fill(this.createPolygon(vertices));
-				ctx.fill(this.createCircle(this._points[centerIndex]));
-			});
-		});
 	}
 }

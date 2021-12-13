@@ -7,11 +7,13 @@ import { store } from "./province/store";
 import { DebugMap } from "./generation/DebugMap";
 
 import "./styles.css";
+import { MapView } from "./generation/MapView";
 
 ReactDOM.render(
 	<React.StrictMode>
 		<Provider store={store}>
-			<DebugMap />
+			<MapView />
+			{/* <DebugMap /> */}
 			<ProvinceView />
 		</Provider>
 	</React.StrictMode>,
