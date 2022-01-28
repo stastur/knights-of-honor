@@ -11,6 +11,7 @@ import createPanZoom from "panzoom";
 import { Group, Path, Svg } from "../svg";
 import { getRandomColor } from "../utils/getRandomColor";
 import { HexagonalMap } from "./hexagonalMap";
+import { Map } from "./map";
 
 enum View {
 	Strategic = "strategic",
@@ -62,51 +63,41 @@ export const MapView = () => {
 
 	const seed = "knights of honor 2";
 
-	const { regions, countries } = useMemo(() => {
-		const map = new HexagonalMap({ w, h, tile, seed });
-		const regions = map.mapRegions((v, index) => ({ ...v, id: index }));
-		const countries = map.mapCountries((v) => v);
+	const map = useMemo(() => {
+		const map = new Map({ w, h, tile, seed });
 
-		return { regions, countries };
+		return map;
 	}, []);
+
+	const { geopolitics, terraform } = map;
 
 	return (
 		<div>
 			<button onClick={switchView} className="fixed top-0 z-10">
 				{view} view
 			</button>
+
 			<div ref={wrapperRef}>
 				<Svg width={w} height={h}>
-					{countries.map((rIndices, i) => (
+					{/* {terraform.centers.map((i) => (
 						<Group
-							className="hover:opacity-60"
-							fill={view === View.Political ? getRandomColor() : undefined}
 							key={i}
+							fill={`hsl(${200 - 200 * terraform.temperature[i]}, 100%, 70%)`}
 						>
-							{rIndices
-								.map((r) => regions[r])
-								.map(({ capital, hexagons, id }) => (
-									<Group
-										key={id}
-										fill={
-											view === View.Strategic ? getRandomColor() : undefined
-										}
-									>
-										{hexagons.map((vertices, index) => (
-											<Path key={index} points={vertices} />
-										))}
+							<Path points={terraform.getHexagonVertices(i)}></Path>
+						</Group>
+					))} */}
 
-										{view === View.Strategic && (
-											<circle
-												fill="white"
-												cx={capital.x}
-												cy={capital.y}
-												r="10"
-											/>
-										)}
-									</Group>
-								))}
-							<text textAnchor="center">{i}</text>
+					{geopolitics.regions.map(({ town, border }, i) => (
+						<Group key={i} stroke={getRandomColor()}>
+							<circle
+								cx={town.x}
+								cy={town.y}
+								width={5}
+								height={5}
+								fill="white"
+							/>
+							<Path points={border}></Path>
 						</Group>
 					))}
 				</Svg>

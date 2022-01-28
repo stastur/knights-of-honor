@@ -23,6 +23,11 @@ const distance = (p1: Point, p2: Point) => {
 
 const byY = (p1: Point, p2: Point) => p1.y - p2.y || p1.x - p2.x;
 
+/**
+ * @todo
+ * - terra mesh - all polygons with landscape related data (temperature, elevation etc.)
+ * - regions and countries mesh
+ */
 export class HexagonalMap {
 	_points: Point[] = [];
 
@@ -54,10 +59,10 @@ export class HexagonalMap {
 		this.initializeTemperature();
 		this.initializeElevation();
 
-		this.initializeRegions();
-		this.initializeCountries();
+		// this.initializeRegions();
+		// this.initializeCountries();
 
-		this.distortMesh();
+		// this.distortMesh();
 	}
 
 	static isGround(elevation: number) {
@@ -150,6 +155,27 @@ export class HexagonalMap {
 				...botLine.slice(bStart, bStart + 3).reverse()
 			);
 		}
+	}
+
+	initializeRegionsV2() {
+		const land: number[] = [];
+
+		for (let i = 0; i < this.centers.length; i++) {
+			HexagonalMap.isGround(this.elevation[i]) && land.push(i);
+		}
+
+		land.sort(
+			(c1, c2) =>
+				this.normalizedNoise(this._points[c1]) -
+				this.normalizedNoise(this._points[c2])
+		);
+
+		const capitals = land.slice(-numRegions);
+		const otherLand = land.slice(0, -numRegions);
+
+		const regions: number[][] = [];
+
+		
 	}
 
 	initializeRegions() {
