@@ -1,7 +1,7 @@
-export const unflatten = <T, N extends number>(
+export const unflatten = <T>(
 	flatArray: ArrayLike<T>,
-	groupSize: N
-) => {
+	groupSize: number
+): Array<T[]> => {
 	const array: Array<T[]> = [];
 
 	for (let i = 0; i < flatArray.length; i += groupSize) {

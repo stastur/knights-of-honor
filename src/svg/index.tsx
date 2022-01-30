@@ -42,7 +42,13 @@ interface SvgProps extends Omit<React.SVGProps<SVGSVGElement>, "viewBox"> {
 const Svg = forwardRef<SVGSVGElement, SvgProps>(
 	({ children, width, height, ...svgProps }, ref) => {
 		return (
-			<svg ref={ref} viewBox={`0 0 ${width} ${height}`} {...svgProps}>
+			<svg
+				ref={ref}
+				width={width}
+				height={height}
+				viewBox={`0 0 ${width} ${height}`}
+				{...svgProps}
+			>
 				{children}
 			</svg>
 		);
