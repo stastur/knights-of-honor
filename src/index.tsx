@@ -1,5 +1,5 @@
 import React from "react";
-import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
 
 import { ProvinceView } from "./province/ProvinceView";
@@ -8,15 +8,17 @@ import { Map } from "./generation_v3/map";
 
 import "./styles.css";
 import { MapView } from "./generation/MapView";
+import { MainMenu } from "./pages/main-menu";
+import { Profile } from "./modules/user-profile";
+import { View } from "./core/examples/new-entities";
 
-ReactDOM.render(
+const root = createRoot(document.getElementById("app") as HTMLElement);
+root.render(
 	<React.StrictMode>
 		<Provider store={store}>
-			<Map />
-			{/* <MapView />
-			<DebugMap /> */}
-			<ProvinceView />
+			<View />
+			{/* <Profile /> */}
+			{/* <MainMenu /> */}
 		</Provider>
-	</React.StrictMode>,
-	document.getElementById("app")
+	</React.StrictMode>
 );

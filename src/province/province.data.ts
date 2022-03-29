@@ -1,6 +1,6 @@
-import * as buildings from "./buildings";
-import { ProvinceFeature } from "./enums";
-import { BuildingStatus, Province } from "./types";
+import * as buildings from "../core/buildings";
+import { ProvinceFeature } from "../core/enums";
+import { BuildingStatus, Province } from "../core/types";
 
 export const Brest: Province = {
 	id: "brest",

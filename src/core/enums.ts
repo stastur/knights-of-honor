@@ -110,3 +110,9 @@ export enum LocalResource {
 	Workers = "workers",
 	Food = "food",
 }
+
+export enum AdditionalBonus {
+	FoodStorage = "foodStorage",
+	Population = "population",
+	Happiness = "happiness",
+}

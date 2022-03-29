@@ -4,13 +4,8 @@ import {
 	BuildingId,
 	ProvinceFeature,
 	Product,
+	AdditionalBonus,
 } from "./enums";
-
-export enum AdditionalBonus {
-	FoodStorage = "foodStorage",
-	Population = "population",
-	Happiness = "happiness",
-}
 
 export interface Bonus {
 	id: GlobalResource | LocalResource | AdditionalBonus;

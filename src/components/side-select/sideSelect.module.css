@@ -1,0 +1,15 @@
+.group {
+	position: relative;
+}
+
+.group input {
+	appearance: none;
+}
+
+.group label {
+	display: none;
+}
+
+.group input:checked + label {
+	display: inline;
+}

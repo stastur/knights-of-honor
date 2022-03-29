@@ -38,5 +38,5 @@ export const isEqual = (one: unknown, other: unknown): boolean => {
 		);
 	}
 
-	return true;
+	return one === other;
 };

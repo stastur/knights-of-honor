@@ -1,6 +1,6 @@
-import { ProvinceFeature } from "./../game/enums";
-import { BuildingId } from "../game/enums";
-import { Bonus, Building, Province } from "../game/types";
+import { ProvinceFeature } from "../core/enums";
+import { BuildingId } from "../core/enums";
+import { Bonus, Building, Province } from "../core/types";
 
 export const getConnectedBuildings = (
 	buildings: Province["buildings"],

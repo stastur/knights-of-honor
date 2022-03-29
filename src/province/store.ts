@@ -6,15 +6,9 @@ import {
 	createSlice,
 	PayloadAction,
 } from "@reduxjs/toolkit";
-import {
-	Bonus,
-	Building,
-	BuildingStatus,
-	Province,
-	AdditionalBonus,
-} from "../game/types";
-import { Brest } from "../game/province";
-import { GlobalResource, LocalResource } from "../game/enums";
+import { Bonus, Building, BuildingStatus, Province } from "../core/types";
+import { Brest } from "./province.data";
+import { GlobalResource, LocalResource, AdditionalBonus } from "../core/enums";
 import { createStructuredSelector } from "reselect";
 import { getBuildingsBonus } from "./utils";
 

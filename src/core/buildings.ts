@@ -4,8 +4,9 @@ import {
 	LocalResource,
 	Product,
 	ProvinceFeature,
+	AdditionalBonus,
 } from "./enums";
-import { AdditionalBonus, Building } from "./types";
+import { Building } from "./types";
 
 export const admiralty: Readonly<Building> = {
 	id: BuildingId.Admiralty,
