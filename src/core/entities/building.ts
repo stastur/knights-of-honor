@@ -1,7 +1,7 @@
-import { Bonus, BonusResources, initialBonusResources } from "./bonus";
-import { Province } from "./province";
+import { Bonus } from "./bonus";
+import { Feature } from "./shared";
 
-import { has, merge } from "../../utils";
+import { buildings } from "../collections/buildings";
 
 type Type = "military" | "civilian" | "advanced";
 
@@ -78,7 +78,7 @@ interface BuildingOptions {
 	type: Type;
 	workers: number;
 
-	requiredFeatures: Province["features"];
+	requiredFeatures: Feature[];
 	requiredBuildings: Name[];
 	bonuses: Bonus[];
 }
@@ -88,7 +88,7 @@ export class Building {
 	type: Type;
 	workers: number;
 
-	requiredFeatures: Province["features"];
+	requiredFeatures: Feature[];
 	requiredBuildings: Name[];
 
 	bonuses: Bonus[];
@@ -109,26 +109,7 @@ export class Building {
 		this.requiredBuildings = requiredBuildings;
 	}
 
-	checkRequirements(province: Province): boolean {
-		if (province.buildings.includes(this)) {
-			return false;
-		}
-
-		const hasBuildings = this.requiredBuildings.every((name) =>
-			province.buildings.find(has({ name }))
-		);
-
-		const hasFeatures = this.requiredFeatures.every((f) =>
-			province.features.includes(f)
-		);
-
-		return hasBuildings && hasFeatures;
-	}
-
-	combineBonuses(province: Province): BonusResources {
-		return this.bonuses.reduce(
-			(combined, bonus) => merge(combined, bonus.for(province)),
-			initialBonusResources
-		);
+	static resolve(name: Name): Building {
+		return buildings[name];
 	}
 }

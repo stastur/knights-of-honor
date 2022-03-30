@@ -1,4 +1,4 @@
-import { AreaBonus, TownBonus } from "../entities/bonus";
+import { ResourceBonus } from "../entities/bonus";
 import { Building } from "../entities/building";
 
 const admiralty = new Building({
@@ -35,8 +35,8 @@ const bakery = new Building({
 	requiredFeatures: [],
 	requiredBuildings: ["granary"],
 	bonuses: [
-		new AreaBonus({ target: "farm", resource: "food", value: 1 }),
-		new TownBonus({ resource: "foodStorage", value: 200 }),
+		new ResourceBonus({ target: "farm", resource: "food", value: 1 }),
+		new ResourceBonus({ target: "town", resource: "foodStorage", value: 200 }),
 	],
 });
 
@@ -74,9 +74,9 @@ const butcher = new Building({
 	requiredFeatures: [],
 	requiredBuildings: ["saltMine", "toolSmithy", "cattleFarm"],
 	bonuses: [
-		new AreaBonus({ target: "farm", resource: "food", value: 1 }),
-		new TownBonus({ resource: "food", value: 2 }),
-		new TownBonus({ resource: "foodStorage", value: 200 }),
+		new ResourceBonus({ target: "farm", resource: "food", value: 1 }),
+		new ResourceBonus({ target: "town", resource: "food", value: 2 }),
+		new ResourceBonus({ target: "town", resource: "foodStorage", value: 200 }),
 	],
 });
 
@@ -96,8 +96,8 @@ const cathedral = new Building({
 	requiredFeatures: [],
 	requiredBuildings: ["church", "waxMaker", "dyesWorkshop", "sculptorsGuild"],
 	bonuses: [
-		new AreaBonus({ target: "monastery", resource: "piety", value: 3 }),
-		new TownBonus({ resource: "piety", value: 2 }),
+		new ResourceBonus({ target: "monastery", resource: "piety", value: 3 }),
+		new ResourceBonus({ target: "town", resource: "piety", value: 2 }),
 	],
 });
 
@@ -135,8 +135,8 @@ const church = new Building({
 	requiredFeatures: [],
 	requiredBuildings: [],
 	bonuses: [
-		new AreaBonus({ target: "monastery", resource: "piety", value: 1 }),
-		new TownBonus({ resource: "piety", value: 1 }),
+		new ResourceBonus({ target: "monastery", resource: "piety", value: 1 }),
+		new ResourceBonus({ target: "town", resource: "piety", value: 1 }),
 	],
 });
 
@@ -146,7 +146,7 @@ const coastGuard = new Building({
 	workers: 2000,
 	requiredFeatures: [],
 	requiredBuildings: ["stonemason", "townWatchHouse"],
-	bonuses: [new TownBonus({ resource: "gold", value: 5 })],
+	bonuses: [new ResourceBonus({ target: "town", resource: "gold", value: 5 })],
 });
 
 const cornerTowers = new Building({
@@ -165,8 +165,8 @@ const docks = new Building({
 	requiredFeatures: [],
 	requiredBuildings: ["fishmongery"],
 	bonuses: [
-		new AreaBonus({ target: "coastalVillage", resource: "gold", value: 1 }),
-		new TownBonus({ resource: "food", value: 2 }),
+		new ResourceBonus({ target: "coastalVillage", resource: "gold", value: 1 }),
+		new ResourceBonus({ target: "town", resource: "food", value: 2 }),
 	],
 });
 
@@ -194,7 +194,7 @@ const fishmongery = new Building({
 	workers: 200,
 	requiredFeatures: ["fishery"],
 	requiredBuildings: [],
-	bonuses: [new AreaBonus({ target: "farm", resource: "food", value: 1 })],
+	bonuses: [new ResourceBonus({ target: "farm", resource: "food", value: 1 })],
 });
 
 const fletcher = new Building({
@@ -221,7 +221,9 @@ const granary = new Building({
 	workers: 200,
 	requiredFeatures: [],
 	requiredBuildings: [],
-	bonuses: [new TownBonus({ resource: "foodStorage", value: 100 })],
+	bonuses: [
+		new ResourceBonus({ target: "town", resource: "foodStorage", value: 100 }),
+	],
 });
 
 const halberdMastersmithy = new Building({
@@ -240,7 +242,7 @@ const harbour = new Building({
 	requiredFeatures: [],
 	requiredBuildings: ["docks"],
 	bonuses: [
-		new AreaBonus({ target: "coastalVillage", resource: "gold", value: 3 }),
+		new ResourceBonus({ target: "coastalVillage", resource: "gold", value: 3 }),
 	],
 });
 
@@ -260,8 +262,8 @@ const hostel = new Building({
 	requiredFeatures: [],
 	requiredBuildings: ["inn"],
 	bonuses: [
-		new AreaBonus({ target: "village", resource: "workers", value: 1 }),
-		new TownBonus({ resource: "workers", value: 2 }),
+		new ResourceBonus({ target: "village", resource: "workers", value: 1 }),
+		new ResourceBonus({ target: "town", resource: "workers", value: 2 }),
 	],
 });
 
@@ -271,7 +273,7 @@ const huntersHuts = new Building({
 	workers: 200,
 	requiredFeatures: ["gameLand"],
 	requiredBuildings: [],
-	bonuses: [new TownBonus({ resource: "gold", value: 1 })],
+	bonuses: [new ResourceBonus({ target: "town", resource: "gold", value: 1 })],
 });
 
 const inkMaker = new Building({
@@ -290,7 +292,7 @@ const inn = new Building({
 	requiredFeatures: [],
 	requiredBuildings: [],
 	bonuses: [
-		new AreaBonus({ target: "village", resource: "workers", value: 1 }),
+		new ResourceBonus({ target: "village", resource: "workers", value: 1 }),
 	],
 });
 
@@ -301,7 +303,7 @@ const library = new Building({
 	requiredFeatures: [],
 	requiredBuildings: ["parchmentMaker"],
 	bonuses: [],
-	// bonuses: [new TownBonus({ resource: "books", value: 1 })],
+	// bonuses: [new BuildingBonus({ target: "town", resource: "books", value: 1 })],
 });
 
 const market = new Building({
@@ -311,8 +313,8 @@ const market = new Building({
 	requiredFeatures: [],
 	requiredBuildings: ["taxCollectorsOffice"],
 	bonuses: [
-		new AreaBonus({ target: "all", resource: "gold", value: 1 }),
-		new TownBonus({ resource: "gold", value: 1 }),
+		new ResourceBonus({ target: "allAreas", resource: "gold", value: 1 }),
+		new ResourceBonus({ target: "town", resource: "gold", value: 1 }),
 	],
 });
 
@@ -323,8 +325,8 @@ const merchantGuild = new Building({
 	requiredFeatures: [],
 	requiredBuildings: ["tailor", "winery"],
 	bonuses: [
-		new AreaBonus({ target: "all", resource: "gold", value: 1 }),
-		new TownBonus({ resource: "gold", value: 2 }),
+		new ResourceBonus({ target: "allAreas", resource: "gold", value: 1 }),
+		new ResourceBonus({ target: "town", resource: "gold", value: 2 }),
 	],
 });
 
@@ -362,8 +364,8 @@ const pickler = new Building({
 	requiredFeatures: [],
 	requiredBuildings: ["fishmongery", "saltMine"],
 	bonuses: [
-		new TownBonus({ resource: "food", value: 2 }),
-		new TownBonus({ resource: "foodStorage", value: 50 }),
+		new ResourceBonus({ target: "town", resource: "food", value: 2 }),
+		new ResourceBonus({ target: "town", resource: "foodStorage", value: 50 }),
 	],
 });
 
@@ -383,7 +385,7 @@ const quarry = new Building({
 	requiredFeatures: ["marbleDeposits"],
 	requiredBuildings: [],
 	bonuses: [
-		new AreaBonus({ target: "village", resource: "workers", value: 1 }),
+		new ResourceBonus({ target: "village", resource: "workers", value: 1 }),
 	],
 });
 
@@ -456,7 +458,7 @@ const silverMine = new Building({
 	workers: 400,
 	requiredFeatures: ["silverOre"],
 	requiredBuildings: ["toolSmithy"],
-	bonuses: [new TownBonus({ resource: "gold", value: 5 })],
+	bonuses: [new ResourceBonus({ target: "town", resource: "gold", value: 5 })],
 });
 
 const spearMaker = new Building({
@@ -501,7 +503,9 @@ const stonemason = new Building({
 	workers: 1500,
 	requiredFeatures: [],
 	requiredBuildings: ["quarry"],
-	bonuses: [new TownBonus({ resource: "workers", value: 1 })],
+	bonuses: [
+		new ResourceBonus({ target: "town", resource: "workers", value: 1 }),
+	],
 });
 
 const stud = new Building({
@@ -555,7 +559,9 @@ const taxCollectorsOffice = new Building({
 	workers: 200,
 	requiredFeatures: [],
 	requiredBuildings: [],
-	bonuses: [new AreaBonus({ target: "all", resource: "gold", value: 1 })],
+	bonuses: [
+		new ResourceBonus({ target: "allAreas", resource: "gold", value: 1 }),
+	],
 });
 
 const toolSmithy = new Building({
@@ -564,7 +570,9 @@ const toolSmithy = new Building({
 	workers: 200,
 	requiredFeatures: [],
 	requiredBuildings: [],
-	bonuses: [new TownBonus({ resource: "workers", value: 1 })],
+	bonuses: [
+		new ResourceBonus({ target: "town", resource: "workers", value: 1 }),
+	],
 });
 
 const townWatchHouse = new Building({
@@ -593,8 +601,8 @@ const university = new Building({
 	requiredBuildings: ["library", "scribesOffice"],
 	bonuses: [],
 	// bonuses: [
-	// 	new AreaBonus({ target: "undefined", resource: "books", value: 3 }),
-	// 	new TownBonus({ resource: "books", value: 3 }),
+	// 	new BuildingBonus({ target: "undefined", resource: "books", value: 3 }),
+	// 	new BuildingBonus({ target: "town", resource: "books", value: 3 }),
 	// ],
 });
 
@@ -604,7 +612,7 @@ const vineyard = new Building({
 	workers: 200,
 	requiredFeatures: ["fertileSoil"],
 	requiredBuildings: [],
-	bonuses: [new AreaBonus({ target: "farm", resource: "food", value: 1 })],
+	bonuses: [new ResourceBonus({ target: "farm", resource: "food", value: 1 })],
 });
 
 const waxMaker = new Building({

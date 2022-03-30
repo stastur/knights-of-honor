@@ -1,28 +1,12 @@
-import { Resource } from "./shared";
-import { RuralArea } from "./rural-area";
-import { BonusResources } from "./bonus";
 import { Building } from "./building";
-
-import { buildings } from "../collections/buildings";
-
-import { has, merge, negate } from "../../utils";
-
-type Feature =
-	| "pasture"
-	| "fishery"
-	| "gameLand"
-	| "silverOre"
-	| "fertileSoil"
-	| "marbleDeposits"
-	| "mineralDeposits"
-	| "brineDeposits";
+import { RuralArea } from "./rural-area";
+import { BonusResources, ResourceBonus } from "./bonus";
+import { Feature, Resource, RuralAreaType } from "./shared";
 
 export class Province {
 	areas: RuralArea[] = [];
 	features: Feature[] = [];
-
 	buildings: Building[] = [];
-	development: { progress: number; building: Building }[] = [];
 
 	private _gold = 1;
 	private _food = 1;
@@ -34,7 +18,7 @@ export class Province {
 	constructor(public name: string) {}
 
 	private getAreaResource(resource: Resource): number {
-		const resourceMap: Record<Resource, RuralArea["type"]> = {
+		const resourceMap: Record<Resource, RuralAreaType> = {
 			gold: "coastalVillage",
 			food: "farm",
 			piety: "monastery",
@@ -48,10 +32,11 @@ export class Province {
 
 	private getBonusResource(resource: keyof BonusResources): number {
 		return this.buildings
-			.map((b) => b.combineBonuses(this))
-			.reduce((acc, rb) => {
-				return merge(acc, rb);
-			}, {} as BonusResources)[resource];
+			.flatMap((b) => b.bonuses)
+			.reduce(
+				(resources, bonus) => ResourceBonus.combine(resources, bonus.for(this)),
+				ResourceBonus.getInitial()
+			)[resource];
 	}
 
 	private getResource(resource: Resource): number {
@@ -85,44 +70,16 @@ export class Province {
 		return { limit, value };
 	}
 
-	/**
-	 * Buildings
-	 */
-	startBuilding(name: Building["name"]): void {
-		const building = buildings[name];
-
-		if (building.checkRequirements(this)) {
-			this.development.push({ progress: 0, building });
-		}
-	}
-
-	destroyBuilding(name: Building["name"]): void {
-		this.buildings = this.buildings.filter(negate(has({ name })));
-	}
-
-	/**
-	 * Game loop
-	 */
 	update(): void {
-		// update food storage
+		this.watchFoodStorage();
+	}
+
+	private watchFoodStorage(): void {
 		const foodStorageLimit = this.foodStorage.limit;
 
 		this._foodStorage = Math.min(
 			this._foodStorage + this.food,
 			foodStorageLimit
 		);
-
-		// update development queue and buildings
-		this.development.forEach((project, index) => {
-			project.progress = Math.min(
-				project.building.workers,
-				project.progress + this.workers
-			);
-
-			if (project.progress === project.building.workers) {
-				this.development.splice(index, 1);
-				this.buildings.push(project.building);
-			}
-		});
 	}
 }

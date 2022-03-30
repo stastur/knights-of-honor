@@ -6,6 +6,7 @@ import { Province } from "../entities/province";
 import { RuralArea } from "../entities/rural-area";
 
 import { groupBy, randrange, shuffle, take } from "../../utils";
+import { DevelopmentManager } from "../managers/development-manager";
 
 const basicBuildings: Province["buildings"] = [
 	allBuildings.taxCollectorsOffice,
@@ -62,6 +63,9 @@ const buildingTabs = groupBy(Object.values(allBuildings), "type");
 Reflect.set(window, "province", brest);
 Reflect.set(window, "buildings", allBuildings);
 
+const developmentManager = new DevelopmentManager(brest);
+Reflect.set(window, "devManager", developmentManager);
+
 export const View = (): JSX.Element => {
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const [_, setState] = useState(0);
@@ -69,6 +73,8 @@ export const View = (): JSX.Element => {
 	useEffect(() => {
 		const id = window.setInterval(() => {
 			brest.update();
+			developmentManager.update();
+
 			setState((v) => {
 				return v + 1;
 			});
@@ -101,8 +107,10 @@ export const View = (): JSX.Element => {
 								<ol
 									key={b.name}
 									className={cn({
-										"bg-red-300": !b.checkRequirements(brest),
-										"bg-green-200": b.checkRequirements(brest),
+										"bg-red-300": !developmentManager.checkRequirements(b.name),
+										"bg-green-200": developmentManager.checkRequirements(
+											b.name
+										),
 									})}
 								>
 									{b.name}

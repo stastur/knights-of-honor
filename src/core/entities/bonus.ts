@@ -1,74 +1,65 @@
 import { Province } from "./province";
-import { RuralArea } from "./rural-area";
-import { Resource } from "./shared";
+import { Resource, RuralAreaType } from "./shared";
 
-import { has } from "../../utils";
-
-type Type = "town" | "ruralArea";
-
-type TownSpecificBonus = "foodStorage" | "population" | "happiness";
-type BonusResource = TownSpecificBonus | Resource;
-
-type AreaType = RuralArea["type"] | "all";
+import { has, merge } from "../../utils";
 
 export type BonusResources = {
 	[K in BonusResource]: number;
 };
 
 export interface Bonus {
-	type: Type;
-
 	for: (province: Province) => BonusResources;
 }
 
-export const initialBonusResources: BonusResources = {
-	foodStorage: 0,
-	population: 0,
-	happiness: 0,
-	food: 0,
-	gold: 0,
-	piety: 0,
-	workers: 0,
-};
+type TownSpecificBonus = "foodStorage" | "population" | "happiness";
+type BonusResource = TownSpecificBonus | Resource;
 
-export class TownBonus implements Bonus {
-	type: Type = "town";
+type Target = "town" | "allAreas" | RuralAreaType;
 
+export class ResourceBonus<T extends Target> implements Bonus {
 	constructor(
 		private options: {
-			resource: BonusResource;
+			target: T;
+			resource: T extends "town" ? BonusResource : Resource;
 			value: number;
 		}
 	) {}
 
-	for(_province: Province): BonusResources {
+	static combine(...resourceCollection: BonusResources[]): BonusResources {
+		return resourceCollection.reduce(merge, ResourceBonus.getInitial());
+	}
+
+	static getInitial(): BonusResources {
 		return {
-			...initialBonusResources,
-			[this.options.resource]: this.options.value,
+			foodStorage: 0,
+			population: 0,
+			happiness: 0,
+			food: 0,
+			gold: 0,
+			piety: 0,
+			workers: 0,
 		};
 	}
-}
-
-export class AreaBonus implements Bonus {
-	type: Type = "ruralArea";
-
-	constructor(
-		private options: {
-			target: AreaType;
-			resource: Resource;
-			value: number;
-		}
-	) {}
 
 	for(province: Province): BonusResources {
-		const affectedAreas =
-			this.options.target === "all"
-				? province.areas
-				: province.areas.filter(has({ type: this.options.target }));
+		let affectedAreas = 0;
+
+		switch (this.options.target) {
+			case "town":
+				affectedAreas = 1;
+				break;
+			case "allAreas":
+				affectedAreas = province.areas.length;
+				break;
+			default: // rural areas
+				affectedAreas = province.areas.filter(
+					has({ type: this.options.target })
+				).length;
+		}
 
 		return {
-			...initialBonusResources,
-			[this.options.resource]: affectedAreas.length * this.options.value,
+			...ResourceBonus.getInitial(),
+			[this.options.resource]: affectedAreas * this.options.value,
 		};
 	}
 }
