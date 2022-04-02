@@ -1,42 +1,16 @@
 import React, { useEffect, useState } from "react";
 import cn from "classnames";
 
-import { buildings as allBuildings } from "../collections/buildings";
+import { baseBuildings, buildings } from "../collections/buildings";
+import { features as allFeatures } from "../collections/features";
 import { Province } from "../entities/province";
 import { RuralArea } from "../entities/rural-area";
 
 import { groupBy, randrange, shuffle, take } from "../../utils";
 import { DevelopmentManager } from "../managers/development-manager";
-
-const basicBuildings: Province["buildings"] = [
-	allBuildings.taxCollectorsOffice,
-	allBuildings.toolSmithy,
-	allBuildings.trainingGrounds,
-	allBuildings.inn,
-	allBuildings.taxCollectorsOffice,
-	allBuildings.palisade,
-	allBuildings.townWatchHouse,
-];
-
-const allFeatures: Province["features"] = [
-	"brineDeposits",
-	"fertileSoil",
-	"fishery",
-	"gameLand",
-	"marbleDeposits",
-	"mineralDeposits",
-	"pasture",
-	"silverOre",
-];
-const features = take(shuffle(allFeatures), randrange(0, 3));
-const buildings = take(shuffle(basicBuildings), randrange(1, 4));
-
-const areaTypes: RuralArea["type"][] = [
-	"coastalVillage",
-	"farm",
-	"monastery",
-	"village",
-];
+import { FinanceManager } from "../managers/finance-manager";
+import { Country } from "../entities/country";
+import { areaTypes } from "../collections/area-types";
 
 const areas: RuralArea[] = [];
 
@@ -44,27 +18,28 @@ for (let i = 0; i < 5; i++) {
 	// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 	const type = shuffle(areaTypes).at(0)!;
 
-	if (type === "coastalVillage" && !features.includes("fishery")) {
-		i--;
-		continue;
-	}
-
 	areas.push(new RuralArea(type));
 }
 
 const brest = new Province("Brest");
 
 brest.areas = areas;
-brest.features = features;
-brest.buildings = buildings;
-
-const buildingTabs = groupBy(Object.values(allBuildings), "type");
+brest.features = take(shuffle(allFeatures), randrange(0, 3));
+brest.buildings = take(shuffle(baseBuildings), randrange(1, 4));
 
 Reflect.set(window, "province", brest);
-Reflect.set(window, "buildings", allBuildings);
+Reflect.set(window, "buildings", buildings);
+
+const c = new Country("c");
+c.provinces.push(brest);
 
 const developmentManager = new DevelopmentManager(brest);
+const financeManager = new FinanceManager(c);
+
 Reflect.set(window, "devManager", developmentManager);
+Reflect.set(window, "finManager", financeManager);
+
+const buildingTabs = groupBy(Object.values(buildings), "type");
 
 export const View = (): JSX.Element => {
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -74,6 +49,7 @@ export const View = (): JSX.Element => {
 		const id = window.setInterval(() => {
 			brest.update();
 			developmentManager.update();
+			financeManager.update();
 
 			setState((v) => {
 				return v + 1;

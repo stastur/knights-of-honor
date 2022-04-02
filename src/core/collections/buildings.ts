@@ -708,3 +708,12 @@ export const buildings = {
 	weavingMill,
 	winery,
 };
+
+export const baseBuildings = [
+	taxCollectorsOffice,
+	toolSmithy,
+	trainingGrounds,
+	inn,
+	palisade,
+	townWatchHouse,
+];

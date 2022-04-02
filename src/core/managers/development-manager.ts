@@ -1,7 +1,7 @@
 import { Building } from "../entities/building";
 import { Province } from "../entities/province";
 
-import { has, without } from "../../utils";
+import { has } from "../../utils";
 
 interface Project {
 	name: Building["name"];
@@ -57,10 +57,7 @@ export class DevelopmentManager {
 			}
 		}
 
-		this.province.buildings = without(
-			this.province.buildings,
-			Building.resolve(name)
-		);
+		this.province.removeBuilding(Building.resolve(name));
 	}
 
 	update(): void {
@@ -74,6 +71,6 @@ export class DevelopmentManager {
 		}
 
 		this.projects.delete(project);
-		this.province.buildings.push(Building.resolve(project.name));
+		this.province.addBuilding(Building.resolve(project.name));
 	};
 }

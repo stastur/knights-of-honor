@@ -1,4 +1,4 @@
-import { RuralAreaType } from "./shared";
+import { RuralAreaType } from "./types";
 
 export class RuralArea {
 	readonly value = 1;

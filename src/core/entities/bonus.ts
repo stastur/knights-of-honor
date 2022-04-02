@@ -4,7 +4,7 @@ import {
 	ProvinceResource,
 	RuralAreaType,
 	TownResource,
-} from "./shared";
+} from "./types";
 
 import { has, merge } from "../../utils";
 
@@ -61,7 +61,7 @@ export class ResourceBonus<T extends Target> implements Bonus {
 			case "allAreas":
 				affectedAreas = province.areas.length;
 				break;
-			default: // rural areas
+			default:
 				affectedAreas = province.areas.filter(
 					has({ type: this.options.target })
 				).length;

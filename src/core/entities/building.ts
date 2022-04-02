@@ -1,5 +1,5 @@
 import { Bonus } from "./bonus";
-import { Feature } from "./shared";
+import { Feature } from "./types";
 
 import { buildings } from "../collections/buildings";
 

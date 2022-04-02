@@ -1,6 +1,7 @@
 export type AreaResource = "food" | "workers" | "piety" | "gold";
 export type TownResource = "foodStorage" | "population" | "happiness";
 export type ProvinceResource = AreaResource | "books";
+export type CountryResource = "gold" | "books" | "piety";
 
 export type Feature =
 	| "pasture"
