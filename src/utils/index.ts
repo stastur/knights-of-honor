@@ -1,3 +1,4 @@
+export { sumBy } from "./sumBy";
 export { createNoise } from "./createNoise";
 export { filterByOccurrence } from "./filterByOccurrence";
 export { has } from "./has";

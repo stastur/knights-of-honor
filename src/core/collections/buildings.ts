@@ -302,8 +302,7 @@ const library = new Building({
 	workers: 1500,
 	requiredFeatures: [],
 	requiredBuildings: ["parchmentMaker"],
-	bonuses: [],
-	// bonuses: [new BuildingBonus({ target: "town", resource: "books", value: 1 })],
+	bonuses: [new ResourceBonus({ target: "town", resource: "books", value: 1 })],
 });
 
 const market = new Building({
@@ -599,11 +598,10 @@ const university = new Building({
 	workers: 2000,
 	requiredFeatures: [],
 	requiredBuildings: ["library", "scribesOffice"],
-	bonuses: [],
-	// bonuses: [
-	// 	new BuildingBonus({ target: "undefined", resource: "books", value: 3 }),
-	// 	new BuildingBonus({ target: "town", resource: "books", value: 3 }),
-	// ],
+	bonuses: [
+		new ResourceBonus({ target: "allAreas", resource: "books", value: 3 }),
+		new ResourceBonus({ target: "town", resource: "books", value: 3 }),
+	],
 });
 
 const vineyard = new Building({

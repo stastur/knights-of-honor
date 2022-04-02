@@ -1,11 +1,9 @@
-type ExtractPrimitiveKeys<T> = {
-	[K in keyof T]: T[K] extends PropertyKey ? K : never;
-}[keyof T];
+import { ExtractKeysByValueType } from "./types";
 
 export const groupBy = <
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	T extends Record<PropertyKey, any>,
-	K extends ExtractPrimitiveKeys<T>
+	K extends ExtractKeysByValueType<T, PropertyKey>
 >(
 	array: T[],
 	field: K

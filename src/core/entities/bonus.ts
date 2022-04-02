@@ -1,26 +1,35 @@
 import { Province } from "./province";
-import { Resource, RuralAreaType } from "./shared";
+import {
+	AreaResource,
+	ProvinceResource,
+	RuralAreaType,
+	TownResource,
+} from "./shared";
 
 import { has, merge } from "../../utils";
-
-export type BonusResources = {
-	[K in BonusResource]: number;
-};
 
 export interface Bonus {
 	for: (province: Province) => BonusResources;
 }
 
-type TownSpecificBonus = "foodStorage" | "population" | "happiness";
-type BonusResource = TownSpecificBonus | Resource;
+export type BonusResource = ProvinceResource | TownResource;
 
-type Target = "town" | "allAreas" | RuralAreaType;
+type BonusResources = {
+	[K in BonusResource]: number;
+};
+
+type TargetToBonus = {
+	town: TownResource | ProvinceResource;
+	allAreas: ProvinceResource;
+} & { [K in RuralAreaType]: AreaResource };
+
+type Target = keyof TargetToBonus;
 
 export class ResourceBonus<T extends Target> implements Bonus {
 	constructor(
 		private options: {
 			target: T;
-			resource: T extends "town" ? BonusResource : Resource;
+			resource: TargetToBonus[T];
 			value: number;
 		}
 	) {}
@@ -38,6 +47,7 @@ export class ResourceBonus<T extends Target> implements Bonus {
 			gold: 0,
 			piety: 0,
 			workers: 0,
+			books: 0,
 		};
 	}
 

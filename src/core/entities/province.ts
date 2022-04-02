@@ -1,7 +1,7 @@
 import { Building } from "./building";
 import { RuralArea } from "./rural-area";
-import { BonusResources, ResourceBonus } from "./bonus";
-import { Feature, Resource, RuralAreaType } from "./shared";
+import { BonusResource, ResourceBonus } from "./bonus";
+import { AreaResource, Feature, RuralAreaType } from "./shared";
 
 export class Province {
 	areas: RuralArea[] = [];
@@ -10,15 +10,16 @@ export class Province {
 
 	private _gold = 1;
 	private _food = 1;
-	private _piety = 0;
+	private _piety = 1;
 	private _workers = 1;
+	private _books = 1;
 
 	private _foodStorage = 100;
 
 	constructor(public name: string) {}
 
-	private getAreaResource(resource: Resource): number {
-		const resourceMap: Record<Resource, RuralAreaType> = {
+	private getAreaResource(resource: AreaResource): number {
+		const resourceMap: Record<AreaResource, RuralAreaType> = {
 			gold: "coastalVillage",
 			food: "farm",
 			piety: "monastery",
@@ -30,7 +31,7 @@ export class Province {
 			.reduce((sum, v) => v.value + sum, 0);
 	}
 
-	private getBonusResource(resource: keyof BonusResources): number {
+	private getBonusResource(resource: BonusResource): number {
 		return this.buildings
 			.flatMap((b) => b.bonuses)
 			.reduce(
@@ -39,7 +40,7 @@ export class Province {
 			)[resource];
 	}
 
-	private getResource(resource: Resource): number {
+	private getResource(resource: AreaResource): number {
 		return (
 			this[`_${resource}`] +
 			this.getAreaResource(resource) +
@@ -61,6 +62,10 @@ export class Province {
 
 	get workers(): number {
 		return this.getResource("workers");
+	}
+
+	get books(): number {
+		return this._books + this.getBonusResource("books");
 	}
 
 	get foodStorage(): { limit: number; value: number } {
