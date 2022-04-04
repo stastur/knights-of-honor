@@ -1,6 +1,6 @@
 import SimplexNoise from "simplex-noise";
 
-import { range } from "../utils/range";
+import { range } from "../../utils/range";
 import { Point } from "./hexagonalMap";
 
 const cos30 = Math.sqrt(3) * 0.5;

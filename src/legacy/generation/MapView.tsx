@@ -8,8 +8,8 @@ import React, {
 } from "react";
 import createPanZoom from "panzoom";
 
-import { Group, Path, Svg } from "../svg";
-import { getRandomColor } from "../utils/getRandomColor";
+import { Group, Path, Svg } from "../../svg";
+import { getRandomColor } from "../../utils/getRandomColor";
 import { HexagonalMap } from "./hexagonalMap";
 import { Map } from "./map";
 

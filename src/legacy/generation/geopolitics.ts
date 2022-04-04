@@ -1,9 +1,9 @@
 import SimplexNoise from "simplex-noise";
 
-import { range } from "../utils/range";
+import { range } from "../../utils/range";
 
 import { Point } from "./hexagonalMap";
-import { filterByOccurrence } from "../utils/filterByOccurrence";
+import { filterByOccurrence } from "../../utils/filterByOccurrence";
 
 interface Region {
 	town: Point;

@@ -1,6 +1,6 @@
 import SimplexNoise from "simplex-noise";
 
-import { range } from "../utils/range";
+import { range } from "../../utils/range";
 
 export interface Point {
 	x: number;

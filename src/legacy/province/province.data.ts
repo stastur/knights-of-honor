@@ -1,6 +1,6 @@
-import * as buildings from "../core/buildings";
-import { ProvinceFeature } from "../core/enums";
-import { BuildingStatus, Province } from "../core/types";
+import * as buildings from "../../core/buildings";
+import { ProvinceFeature } from "../../core/enums";
+import { BuildingStatus, Province } from "../../core/types";
 
 export const Brest: Province = {
 	id: "brest",
@@ -27,6 +27,7 @@ export const Brest: Province = {
 	},
 
 	population: {
+	
 		value: 100,
 		limit: 100,
 		growthRate: 0.05,
