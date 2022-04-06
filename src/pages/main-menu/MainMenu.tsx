@@ -1,4 +1,5 @@
 import React from "react";
+
 import { UserProfile } from "../../modules/user-profile";
 
 export const MainMenu = (): JSX.Element => {

@@ -1,37 +1,45 @@
-import { ResourceBonus } from "../entities/bonus";
-import { Building } from "../entities/building";
+import { has } from "@app/utils";
 
-const admiralty = new Building({
+import { Building } from "../entities/building";
+import { ResourceBonus } from "../entities/bonus";
+
+export const admiralty = new Building({
 	name: "admiralty",
 	type: "advanced",
 	workers: 1500,
+	cost: 6000,
+	previous: "harbour",
+	next: "coastGuard",
 	requiredFeatures: [],
 	requiredBuildings: ["harbour"],
 	bonuses: [],
 });
 
-const armoury = new Building({
+export const armoury = new Building({
 	name: "armoury",
 	type: "military",
 	workers: 300,
+	cost: 2000,
 	requiredFeatures: [],
 	requiredBuildings: ["trainingGrounds"],
 	bonuses: [],
 });
 
-const axeSmith = new Building({
+export const axeSmith = new Building({
 	name: "axeSmith",
 	type: "military",
 	workers: 300,
+	cost: 1000,
 	requiredFeatures: [],
 	requiredBuildings: ["trainingGrounds"],
 	bonuses: [],
 });
 
-const bakery = new Building({
+export const bakery = new Building({
 	name: "bakery",
 	type: "advanced",
 	workers: 500,
+	cost: 2000,
 	requiredFeatures: [],
 	requiredBuildings: ["granary"],
 	bonuses: [
@@ -40,37 +48,42 @@ const bakery = new Building({
 	],
 });
 
-const ballistaTowers = new Building({
+export const ballistaTowers = new Building({
 	name: "ballistaTowers",
 	type: "military",
 	workers: 1200,
+	cost: 5000,
 	requiredFeatures: [],
 	requiredBuildings: ["stoneWall"],
 	bonuses: [],
 });
 
-const beeYard = new Building({
+export const beeYard = new Building({
 	name: "beeYard",
 	type: "civilian",
 	workers: 200,
+	cost: 1000,
 	requiredFeatures: ["fertileSoil"],
 	requiredBuildings: [],
 	bonuses: [],
 });
 
-const bulwark = new Building({
+export const bulwark = new Building({
 	name: "bulwark",
 	type: "military",
 	workers: 3000,
+	cost: 8000,
+	previous: "stoneWall",
 	requiredFeatures: [],
 	requiredBuildings: ["stoneWall"],
 	bonuses: [],
 });
 
-const butcher = new Building({
+export const butcher = new Building({
 	name: "butcher",
 	type: "advanced",
 	workers: 500,
+	cost: 2000,
 	requiredFeatures: [],
 	requiredBuildings: ["saltMine", "toolSmithy", "cattleFarm"],
 	bonuses: [
@@ -80,19 +93,23 @@ const butcher = new Building({
 	],
 });
 
-const catapults = new Building({
+export const catapults = new Building({
 	name: "catapults",
 	type: "military",
 	workers: 1000,
+	cost: 8000,
+	previous: "drumTowers",
 	requiredFeatures: [],
 	requiredBuildings: ["toolSmithy", "stoneWall", "drumTowers"],
 	bonuses: [],
 });
 
-const cathedral = new Building({
+export const cathedral = new Building({
 	name: "cathedral",
 	type: "advanced",
 	workers: 3000,
+	cost: 10000,
+	previous: "church",
 	requiredFeatures: [],
 	requiredBuildings: ["church", "waxMaker", "dyesWorkshop", "sculptorsGuild"],
 	bonuses: [
@@ -101,37 +118,43 @@ const cathedral = new Building({
 	],
 });
 
-const cattleFarm = new Building({
+export const cattleFarm = new Building({
 	name: "cattleFarm",
 	type: "civilian",
 	workers: 200,
+	cost: 1000,
 	requiredFeatures: ["pasture"],
 	requiredBuildings: [],
 	bonuses: [],
 });
 
-const cauldrons = new Building({
+export const cauldrons = new Building({
 	name: "cauldrons",
 	type: "military",
 	workers: 1000,
+	cost: 3000,
+	previous: "gateTowers",
 	requiredFeatures: [],
-	requiredBuildings: ["stoneWall", "toolSmithy"],
+	requiredBuildings: ["toolSmithy", "gateTowers"],
 	bonuses: [],
 });
 
-const chainMailWorkshop = new Building({
+export const chainMailWorkshop = new Building({
 	name: "chainMailWorkshop",
 	type: "military",
 	workers: 300,
+	cost: 2000,
 	requiredFeatures: [],
 	requiredBuildings: ["armoury"],
 	bonuses: [],
 });
 
-const church = new Building({
+export const church = new Building({
 	name: "church",
 	type: "civilian",
 	workers: 700,
+	cost: 3000,
+	next: "cathedral",
 	requiredFeatures: [],
 	requiredBuildings: [],
 	bonuses: [
@@ -140,28 +163,33 @@ const church = new Building({
 	],
 });
 
-const coastGuard = new Building({
+export const coastGuard = new Building({
 	name: "coastGuard",
 	type: "advanced",
 	workers: 2000,
+	cost: 5000,
+	previous: "harbour",
 	requiredFeatures: [],
-	requiredBuildings: ["stonemason", "townWatchHouse"],
+	requiredBuildings: ["stonemason", "townWatchHouse", "harbour"],
 	bonuses: [new ResourceBonus({ target: "town", resource: "gold", value: 5 })],
 });
 
-const cornerTowers = new Building({
+export const cornerTowers = new Building({
 	name: "cornerTowers",
 	type: "military",
 	workers: 1200,
+	cost: 8000,
 	requiredFeatures: [],
 	requiredBuildings: ["stoneWall"],
 	bonuses: [],
 });
 
-const docks = new Building({
+export const docks = new Building({
 	name: "docks",
 	type: "advanced",
 	workers: 500,
+	cost: 2000,
+	previous: "fishmongery",
 	requiredFeatures: [],
 	requiredBuildings: ["fishmongery"],
 	bonuses: [
@@ -170,55 +198,64 @@ const docks = new Building({
 	],
 });
 
-const drumTowers = new Building({
+export const drumTowers = new Building({
 	name: "drumTowers",
 	type: "military",
 	workers: 1200,
+	cost: 3000,
+	next: "catapults",
 	requiredFeatures: [],
 	requiredBuildings: ["stoneWall"],
 	bonuses: [],
 });
 
-const dyesWorkshop = new Building({
+export const dyesWorkshop = new Building({
 	name: "dyesWorkshop",
 	type: "advanced",
 	workers: 500,
+	cost: 2000,
 	requiredFeatures: ["mineralDeposits"],
 	requiredBuildings: [],
 	bonuses: [],
 });
 
-const fishmongery = new Building({
+export const fishmongery = new Building({
 	name: "fishmongery",
 	type: "advanced",
 	workers: 200,
+	cost: 300,
+	next: "docks",
 	requiredFeatures: ["fishery"],
 	requiredBuildings: [],
 	bonuses: [new ResourceBonus({ target: "farm", resource: "food", value: 1 })],
 });
 
-const fletcher = new Building({
+export const fletcher = new Building({
 	name: "fletcher",
 	type: "military",
 	workers: 300,
+	cost: 1000,
 	requiredFeatures: [],
 	requiredBuildings: ["trainingGrounds"],
 	bonuses: [],
 });
 
-const gateTowers = new Building({
+export const gateTowers = new Building({
 	name: "gateTowers",
 	type: "military",
 	workers: 1500,
+	cost: 8000,
+	next: "cauldrons",
 	requiredFeatures: [],
 	requiredBuildings: ["stoneWall"],
 	bonuses: [],
 });
 
-const granary = new Building({
+export const granary = new Building({
 	name: "granary",
 	type: "civilian",
 	workers: 200,
+	cost: 300,
 	requiredFeatures: [],
 	requiredBuildings: [],
 	bonuses: [
@@ -226,19 +263,24 @@ const granary = new Building({
 	],
 });
 
-const halberdMastersmithy = new Building({
+export const halberdMastersmithy = new Building({
 	name: "halberdMastersmithy",
 	type: "military",
 	workers: 500,
+	cost: 5000,
+	previous: "spearMaker",
 	requiredFeatures: [],
 	requiredBuildings: ["spearMaker"],
 	bonuses: [],
 });
 
-const harbour = new Building({
+export const harbour = new Building({
 	name: "harbour",
 	type: "advanced",
 	workers: 800,
+	cost: 3000,
+	previous: "docks",
+	next: "admiralty",
 	requiredFeatures: [],
 	requiredBuildings: ["docks"],
 	bonuses: [
@@ -246,19 +288,22 @@ const harbour = new Building({
 	],
 });
 
-const hempField = new Building({
+export const hempField = new Building({
 	name: "hempField",
 	type: "civilian",
 	workers: 200,
+	cost: 2000,
 	requiredFeatures: ["fertileSoil"],
 	requiredBuildings: [],
 	bonuses: [],
 });
 
-const hostel = new Building({
+export const hostel = new Building({
 	name: "hostel",
 	type: "civilian",
 	workers: 500,
+	cost: 2000,
+	previous: "inn",
 	requiredFeatures: [],
 	requiredBuildings: ["inn"],
 	bonuses: [
@@ -267,28 +312,32 @@ const hostel = new Building({
 	],
 });
 
-const huntersHuts = new Building({
+export const huntersHuts = new Building({
 	name: "huntersHuts",
 	type: "civilian",
 	workers: 200,
+	cost: 300,
 	requiredFeatures: ["gameLand"],
 	requiredBuildings: [],
 	bonuses: [new ResourceBonus({ target: "town", resource: "gold", value: 1 })],
 });
 
-const inkMaker = new Building({
+export const inkMaker = new Building({
 	name: "inkMaker",
 	type: "advanced",
 	workers: 500,
+	cost: 2000,
 	requiredFeatures: ["mineralDeposits"],
 	requiredBuildings: [],
 	bonuses: [],
 });
 
-const inn = new Building({
+export const inn = new Building({
 	name: "inn",
 	type: "civilian",
 	workers: 100,
+	cost: 300,
+	next: "hostel",
 	requiredFeatures: [],
 	requiredBuildings: [],
 	bonuses: [
@@ -296,19 +345,23 @@ const inn = new Building({
 	],
 });
 
-const library = new Building({
+export const library = new Building({
 	name: "library",
 	type: "advanced",
 	workers: 1500,
+	cost: 5000,
+	next: "university",
 	requiredFeatures: [],
 	requiredBuildings: ["parchmentMaker"],
 	bonuses: [new ResourceBonus({ target: "town", resource: "books", value: 1 })],
 });
 
-const market = new Building({
+export const market = new Building({
 	name: "market",
 	type: "advanced",
 	workers: 400,
+	cost: 3000,
+	next: "merchantGuild",
 	requiredFeatures: [],
 	requiredBuildings: ["taxCollectorsOffice"],
 	bonuses: [
@@ -317,49 +370,56 @@ const market = new Building({
 	],
 });
 
-const merchantGuild = new Building({
+export const merchantGuild = new Building({
 	name: "merchantGuild",
 	type: "advanced",
 	workers: 3000,
+	cost: 10000,
+	previous: "market",
 	requiredFeatures: [],
-	requiredBuildings: ["tailor", "winery"],
+	requiredBuildings: ["tailor", "winery", "market"],
 	bonuses: [
 		new ResourceBonus({ target: "allAreas", resource: "gold", value: 1 }),
 		new ResourceBonus({ target: "town", resource: "gold", value: 2 }),
 	],
 });
 
-const moat = new Building({
+export const moat = new Building({
 	name: "moat",
 	type: "military",
 	workers: 1000,
+	cost: 3000,
 	requiredFeatures: [],
 	requiredBuildings: [],
 	bonuses: [],
 });
 
-const palisade = new Building({
+export const palisade = new Building({
 	name: "palisade",
 	type: "military",
 	workers: 600,
+	cost: 4000,
+	next: "stoneWall",
 	requiredFeatures: [],
 	requiredBuildings: [],
 	bonuses: [],
 });
 
-const parchmentMaker = new Building({
+export const parchmentMaker = new Building({
 	name: "parchmentMaker",
 	type: "advanced",
 	workers: 500,
+	cost: 1000,
 	requiredFeatures: [],
 	requiredBuildings: ["sheepFarm"],
 	bonuses: [],
 });
 
-const pickler = new Building({
+export const pickler = new Building({
 	name: "pickler",
 	type: "advanced",
 	workers: 500,
+	cost: 1000,
 	requiredFeatures: [],
 	requiredBuildings: ["fishmongery", "saltMine"],
 	bonuses: [
@@ -368,19 +428,21 @@ const pickler = new Building({
 	],
 });
 
-const plateArmourer = new Building({
+export const plateArmourer = new Building({
 	name: "plateArmourer",
 	type: "military",
 	workers: 500,
+	cost: 5000,
 	requiredFeatures: [],
 	requiredBuildings: ["armoury"],
 	bonuses: [],
 });
 
-const quarry = new Building({
+export const quarry = new Building({
 	name: "quarry",
-	type: "military",
+	type: "civilian",
 	workers: 200,
+	cost: 1000,
 	requiredFeatures: ["marbleDeposits"],
 	requiredBuildings: [],
 	bonuses: [
@@ -388,118 +450,134 @@ const quarry = new Building({
 	],
 });
 
-const riggersStore = new Building({
+export const riggersStore = new Building({
 	name: "riggersStore",
 	type: "advanced",
 	workers: 500,
+	cost: 3000,
 	requiredFeatures: [],
 	requiredBuildings: ["hempField", "waxMaker", "toolSmithy"],
 	bonuses: [],
 });
 
-const saltMine = new Building({
+export const saltMine = new Building({
 	name: "saltMine",
 	type: "civilian",
 	workers: 200,
+	cost: 500,
 	requiredFeatures: ["brineDeposits"],
 	requiredBuildings: ["toolSmithy"],
 	bonuses: [],
 });
 
-const scaleArmourer = new Building({
+export const scaleArmourer = new Building({
 	name: "scaleArmourer",
 	type: "military",
 	workers: 500,
+	cost: 3000,
 	requiredFeatures: [],
 	requiredBuildings: ["armoury"],
 	bonuses: [],
 });
 
-const scribesOffice = new Building({
+export const scribesOffice = new Building({
 	name: "scribesOffice",
 	type: "advanced",
 	workers: 800,
+	cost: 3000,
 	requiredFeatures: [],
 	requiredBuildings: ["inkMaker", "parchmentMaker"],
 	bonuses: [],
 });
 
-const sculptorsGuild = new Building({
+export const sculptorsGuild = new Building({
 	name: "sculptorsGuild",
 	type: "advanced",
 	workers: 500,
+	cost: 3000,
 	requiredFeatures: [],
 	requiredBuildings: ["quarry"],
 	bonuses: [],
 });
 
-const sheepFarm = new Building({
+export const sheepFarm = new Building({
 	name: "sheepFarm",
 	type: "civilian",
 	workers: 200,
+	cost: 800,
 	requiredFeatures: ["pasture"],
 	requiredBuildings: [],
 	bonuses: [],
 });
 
-const siegeWorkshop = new Building({
+export const siegeWorkshop = new Building({
 	name: "siegeWorkshop",
 	type: "military",
 	workers: 200,
+	cost: 500,
 	requiredFeatures: [],
 	requiredBuildings: ["trainingGrounds", "toolSmithy"],
 	bonuses: [],
 });
 
-const silverMine = new Building({
+export const silverMine = new Building({
 	name: "silverMine",
 	type: "civilian",
 	workers: 400,
+	cost: 3000,
 	requiredFeatures: ["silverOre"],
 	requiredBuildings: ["toolSmithy"],
 	bonuses: [new ResourceBonus({ target: "town", resource: "gold", value: 5 })],
 });
 
-const spearMaker = new Building({
+export const spearMaker = new Building({
 	name: "spearMaker",
 	type: "military",
 	workers: 300,
+	cost: 1000,
+	next: "halberdMastersmithy",
 	requiredFeatures: [],
 	requiredBuildings: ["trainingGrounds"],
 	bonuses: [],
 });
 
-const spinningMill = new Building({
+export const spinningMill = new Building({
 	name: "spinningMill",
 	type: "advanced",
 	workers: 500,
+	cost: 1000,
 	requiredFeatures: [],
 	requiredBuildings: ["sheepFarm"],
 	bonuses: [],
 });
 
-const stable = new Building({
+export const stable = new Building({
 	name: "stable",
 	type: "military",
 	workers: 500,
+	cost: 2000,
 	requiredFeatures: [],
 	requiredBuildings: ["granary"],
 	bonuses: [],
 });
 
-const stoneWall = new Building({
+export const stoneWall = new Building({
 	name: "stoneWall",
 	type: "military",
 	workers: 500,
+	cost: 3000,
+	previous: "palisade",
+	next: "bulwark",
 	requiredFeatures: [],
 	requiredBuildings: ["palisade"],
 	bonuses: [],
 });
 
-const stonemason = new Building({
+export const stonemason = new Building({
 	name: "stonemason",
-	type: "civilian",
+	type: "advanced",
 	workers: 1500,
+	cost: 5000,
 	requiredFeatures: [],
 	requiredBuildings: ["quarry"],
 	bonuses: [
@@ -507,55 +585,63 @@ const stonemason = new Building({
 	],
 });
 
-const stud = new Building({
+export const stud = new Building({
 	name: "stud",
 	type: "civilian",
 	workers: 200,
+	cost: 1000,
 	requiredFeatures: ["pasture"],
 	requiredBuildings: [],
 	bonuses: [],
 });
 
-const swordMastersmithy = new Building({
+export const swordMastersmithy = new Building({
 	name: "swordMastersmithy",
 	type: "military",
 	workers: 500,
+	cost: 5000,
+	previous: "swordsmith",
 	requiredFeatures: [],
 	requiredBuildings: ["swordsmith"],
 	bonuses: [],
 });
 
-const swordsmith = new Building({
+export const swordsmith = new Building({
 	name: "swordsmith",
 	type: "military",
 	workers: 300,
+	cost: 1000,
+	next: "swordMastersmithy",
 	requiredFeatures: [],
 	requiredBuildings: ["trainingGrounds"],
 	bonuses: [],
 });
 
-const tailor = new Building({
+export const tailor = new Building({
 	name: "tailor",
 	type: "advanced",
 	workers: 500,
+	cost: 3000,
 	requiredFeatures: [],
 	requiredBuildings: ["weavingMill", "dyesWorkshop"],
 	bonuses: [],
 });
 
-const tannery = new Building({
+export const tannery = new Building({
 	name: "tannery",
 	type: "advanced",
 	workers: 500,
+	cost: 2000,
 	requiredFeatures: [],
 	requiredBuildings: ["cattleFarm", "toolSmithy"],
 	bonuses: [],
 });
 
-const taxCollectorsOffice = new Building({
+export const taxCollectorsOffice = new Building({
 	name: "taxCollectorsOffice",
 	type: "civilian",
 	workers: 200,
+	cost: 800,
 	requiredFeatures: [],
 	requiredBuildings: [],
 	bonuses: [
@@ -563,10 +649,11 @@ const taxCollectorsOffice = new Building({
 	],
 });
 
-const toolSmithy = new Building({
+export const toolSmithy = new Building({
 	name: "toolSmithy",
 	type: "civilian",
 	workers: 200,
+	cost: 500,
 	requiredFeatures: [],
 	requiredBuildings: [],
 	bonuses: [
@@ -574,28 +661,32 @@ const toolSmithy = new Building({
 	],
 });
 
-const townWatchHouse = new Building({
+export const townWatchHouse = new Building({
 	name: "townWatchHouse",
 	type: "military",
 	workers: 100,
+	cost: 300,
 	requiredFeatures: [],
 	requiredBuildings: [],
 	bonuses: [],
 });
 
-const trainingGrounds = new Building({
+export const trainingGrounds = new Building({
 	name: "trainingGrounds",
 	type: "military",
 	workers: 200,
+	cost: 500,
 	requiredFeatures: [],
 	requiredBuildings: [],
 	bonuses: [],
 });
 
-const university = new Building({
+export const university = new Building({
 	name: "university",
 	type: "advanced",
 	workers: 2000,
+	cost: 10000,
+	previous: "library",
 	requiredFeatures: [],
 	requiredBuildings: ["library", "scribesOffice"],
 	bonuses: [
@@ -604,110 +695,49 @@ const university = new Building({
 	],
 });
 
-const vineyard = new Building({
+export const vineyard = new Building({
 	name: "vineyard",
 	type: "civilian",
 	workers: 200,
+	cost: 2000,
 	requiredFeatures: ["fertileSoil"],
 	requiredBuildings: [],
 	bonuses: [new ResourceBonus({ target: "farm", resource: "food", value: 1 })],
 });
 
-const waxMaker = new Building({
+export const waxMaker = new Building({
 	name: "waxMaker",
 	type: "advanced",
 	workers: 500,
+	cost: 2000,
 	requiredFeatures: [],
 	requiredBuildings: ["beeYard"],
 	bonuses: [],
 });
 
-const weavingMill = new Building({
+export const weavingMill = new Building({
 	name: "weavingMill",
 	type: "advanced",
 	workers: 500,
+	cost: 3000,
 	requiredFeatures: [],
 	requiredBuildings: ["hempField", "toolSmithy"],
 	bonuses: [],
 });
 
-const winery = new Building({
+export const winery = new Building({
 	name: "winery",
 	type: "advanced",
 	workers: 500,
+	cost: 3000,
 	requiredFeatures: [],
 	requiredBuildings: ["vineyard"],
 	bonuses: [],
 });
 
-export const buildings = {
-	admiralty,
-	armoury,
-	axeSmith,
-	bakery,
-	ballistaTowers,
-	beeYard,
-	bulwark,
-	butcher,
-	catapults,
-	cathedral,
-	cattleFarm,
-	cauldrons,
-	chainMailWorkshop,
-	church,
-	coastGuard,
-	cornerTowers,
-	docks,
-	drumTowers,
-	dyesWorkshop,
-	fishmongery,
-	fletcher,
-	gateTowers,
-	granary,
-	halberdMastersmithy,
-	harbour,
-	hempField,
-	hostel,
-	huntersHuts,
-	inkMaker,
-	inn,
-	library,
-	market,
-	merchantGuild,
-	moat,
-	palisade,
-	parchmentMaker,
-	pickler,
-	plateArmourer,
-	quarry,
-	riggersStore,
-	saltMine,
-	scaleArmourer,
-	scribesOffice,
-	sculptorsGuild,
-	sheepFarm,
-	siegeWorkshop,
-	silverMine,
-	spearMaker,
-	spinningMill,
-	stable,
-	stoneWall,
-	stonemason,
-	stud,
-	swordMastersmithy,
-	swordsmith,
-	tailor,
-	tannery,
-	taxCollectorsOffice,
-	toolSmithy,
-	townWatchHouse,
-	trainingGrounds,
-	university,
-	vineyard,
-	waxMaker,
-	weavingMill,
-	winery,
-};
+export const allBuildings = Array.from(Building.collection.values());
+
+export const mainBuildings = allBuildings.filter(has({ previous: undefined }));
 
 export const baseBuildings = [
 	taxCollectorsOffice,

@@ -1,0 +1,19 @@
+import React from "react";
+import { Box, Grid, GridProps } from "@chakra-ui/react";
+
+import { Times } from "@app/components/times";
+
+export const TownGuardsPanel = (props: GridProps): JSX.Element => {
+	return (
+		<Grid
+			{...props}
+			gridTemplateColumns="repeat(3, 4.5rem)"
+			gridTemplateRows="repeat(2, 3rem)"
+			gap={2}
+		>
+			<Times n={6}>
+				<Box width="full" height="full" backgroundColor="gray.100" />
+			</Times>
+		</Grid>
+	);
+};

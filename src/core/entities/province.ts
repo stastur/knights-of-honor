@@ -1,8 +1,9 @@
+import { without } from "@app/utils";
+
 import { Building } from "./building";
 import { RuralArea } from "./rural-area";
 import { BonusResource, ResourceBonus } from "./bonus";
 import { AreaResource, Feature, RuralAreaType } from "./types";
-import { without } from "../../utils";
 
 export class Province {
 	areas: RuralArea[] = [];
@@ -50,8 +51,8 @@ export class Province {
 		this.buildings.push(b);
 	}
 
-	removeBuilding(b: Building): void {
-		this.buildings = without(this.buildings, b);
+	removeBuilding(...buildings: Building[]): void {
+		this.buildings = without(this.buildings, ...buildings);
 	}
 
 	update(): void {

@@ -1,4 +1,4 @@
-import { Country } from "../entities/country";
+import { Kingdom } from "../entities/kingdom";
 import { CountryResource } from "../entities/types";
 
 export class FinanceManager {
@@ -6,7 +6,7 @@ export class FinanceManager {
 	piety = 1000;
 	books = 1000;
 
-	constructor(private country: Country) {}
+	constructor(private kingdom: Kingdom) {}
 
 	replenish(resource: CountryResource, value: number): void {
 		this[resource] += value;
@@ -28,12 +28,12 @@ export class FinanceManager {
 	update(): void {
 		this.watchForGold();
 
-		this.piety = Math.min(this.piety + this.country.piety, 1000);
-		this.books = Math.min(this.books + this.country.books, 1000);
+		this.piety = Math.min(this.piety + this.kingdom.piety, 1000);
+		this.books = Math.min(this.books + this.kingdom.books, 1000);
 	}
 
 	private watchForGold(): void {
 		// TODO: inflation
-		this.gold += this.country.gold;
+		this.gold += this.kingdom.gold;
 	}
 }

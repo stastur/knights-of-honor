@@ -10,7 +10,12 @@
 		"allowSyntheticDefaultImports": true,
 		"strict": true,
 		"noEmit": true,
-		"experimentalDecorators": true
+		"experimentalDecorators": true,
+		"esModuleInterop": true,
+		"baseUrl": "src",
+		"paths": {
+			"@app/*": ["./*"]
+		}
 	},
 	"include": ["./src"]
 }

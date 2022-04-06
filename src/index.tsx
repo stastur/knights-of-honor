@@ -1,24 +1,38 @@
 import React from "react";
-import { createRoot } from "react-dom/client";
-import { Provider } from "react-redux";
+import { render } from "react-dom";
+import { ChakraProvider } from "@chakra-ui/react";
 
-import { ProvinceView } from "./province/ProvinceView";
-import { store } from "./province/store";
-import { Map } from "./generation_v3/map";
+import { baseBuildings } from "@app/core/collections/buildings";
+import { ControlPanel } from "@app/modules/province/components/control-panel";
+import { DevelopmentManagerObservable } from "@app/observables/development-manager";
+import { ProvinceObservable } from "@app/observables/province";
+import { KingdomObservable } from "@app/observables/kingdom";
 
 import "./styles.css";
-import { MapView } from "./generation/MapView";
-import { MainMenu } from "./pages/main-menu";
-import { Profile } from "./modules/user-profile";
-import { View } from "./core/examples/new-entities";
 
-const root = createRoot(document.getElementById("app") as HTMLElement);
-root.render(
+const province = new ProvinceObservable("Brest");
+baseBuildings.forEach((b) => province.addBuilding(b));
+
+province.features = ["fishery", "marbleDeposits"];
+
+const developmentManager = new DevelopmentManagerObservable(province);
+const kingdom = new KingdomObservable("Belarus");
+
+kingdom.provinces.push(province);
+
+setInterval(() => {
+	province.update();
+	developmentManager.update();
+}, 100);
+
+render(
 	<React.StrictMode>
-		<Provider store={store}>
-			<View />
-			{/* <Profile /> */}
-			{/* <MainMenu /> */}
-		</Provider>
-	</React.StrictMode>
+		<ChakraProvider>
+			<ControlPanel
+				province={province}
+				developmentManager={developmentManager}
+			/>
+		</ChakraProvider>
+	</React.StrictMode>,
+	document.getElementById("app")
 );

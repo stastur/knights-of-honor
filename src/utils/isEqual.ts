@@ -34,7 +34,7 @@ export const isEqual = (one: unknown, other: unknown): boolean => {
 
 		return oneKeys.every((key) =>
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			isEqual((one as any)[key], (one as any)[key])
+			isEqual((one as any)[key], (other as any)[key])
 		);
 	}
 

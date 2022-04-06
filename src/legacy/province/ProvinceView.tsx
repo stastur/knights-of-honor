@@ -13,7 +13,7 @@ import {
 import { TiTimesOutline } from "react-icons/ti";
 import cn from "classnames";
 
-import * as buildings from "../../core/buildings";
+import * as buildings from "../buildings";
 import { Province } from "../../core/types";
 import { actions, selectors } from "./store";
 import { getConnectedBuildings, isConstructionAvailable } from "./utils";

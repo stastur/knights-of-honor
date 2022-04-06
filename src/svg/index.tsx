@@ -1,5 +1,6 @@
 import React, { forwardRef, memo, ReactNode } from "react";
-import { Point } from "../generation/hexagonalMap";
+
+import { Point } from "../legacy/generation/hexagonalMap";
 
 const createSVGPath = (points: Point[]) => {
 	return (

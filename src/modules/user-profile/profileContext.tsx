@@ -1,6 +1,6 @@
 import React, { createContext, useCallback, useContext, useState } from "react";
-import { identity } from "../../utils/identity";
-import { negate } from "../../utils/negate";
+
+import { identity, negate } from "@app/utils";
 
 const USER_PROFILE_STORAGE_KEY = "koh_user_profile";
 const defaultProfile: UserProfile = { name: "", title: "knight", avatar: "" };

@@ -1,7 +1,8 @@
 import React from "react";
 import { GiCancel, GiCycle, GiQuillInk, GiTick } from "react-icons/gi";
 
-import { SideSelect } from "../../components/side-select";
+import { SideSelect } from "@app/components/side-select";
+
 import { ProfileProvider, useProfileContext } from "./profileContext";
 
 const titles = ["knight", "duke", "emperor", "marshal", "czar", "king"];

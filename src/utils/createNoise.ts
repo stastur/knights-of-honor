@@ -1,4 +1,4 @@
-import SimplexNoise from "simplex-noise";
+import Noise from "simplex-noise";
 
 interface Args {
 	x: number;
@@ -9,7 +9,7 @@ interface Args {
 }
 
 export const createNoise = (seed: string): ((args: Args) => number) => {
-	const noise = new SimplexNoise(seed);
+	const noise = new Noise(seed);
 
 	return ({ x, y, layers = 1, details = 2, smoothing = 0.5 }: Args) => {
 		let noiseSum = 0;

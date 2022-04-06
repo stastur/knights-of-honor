@@ -1,8 +1,6 @@
 import { Bonus } from "./bonus";
 import { Feature } from "./types";
 
-import { buildings } from "../collections/buildings";
-
 type Type = "military" | "civilian" | "advanced";
 
 type Name =
@@ -77,6 +75,10 @@ interface BuildingOptions {
 	name: Name;
 	type: Type;
 	workers: number;
+	cost: number;
+
+	next?: Name;
+	previous?: Name;
 
 	requiredFeatures: Feature[];
 	requiredBuildings: Name[];
@@ -84,32 +86,56 @@ interface BuildingOptions {
 }
 
 export class Building {
-	name: Name;
-	type: Type;
-	workers: number;
-
-	requiredFeatures: Feature[];
-	requiredBuildings: Name[];
-
-	bonuses: Bonus[];
-
-	constructor({
-		name,
-		type,
-		requiredFeatures,
-		requiredBuildings,
-		bonuses,
-		workers,
-	}: BuildingOptions) {
-		this.name = name;
-		this.type = type;
-		this.bonuses = bonuses;
-		this.workers = workers;
-		this.requiredFeatures = requiredFeatures;
-		this.requiredBuildings = requiredBuildings;
-	}
+	static collection = new Map<Name, Building>();
 
 	static resolve(name: Name): Building {
-		return buildings[name];
+		const building = Building.collection.get(name);
+
+		if (!building) {
+			throw Error(`Unknown building - ${name}`);
+		}
+
+		return building;
+	}
+
+	name!: Name;
+	type!: Type;
+	workers!: number;
+	cost!: number;
+
+	requiredFeatures!: Feature[];
+	requiredBuildings!: Name[];
+
+	bonuses!: Bonus[];
+
+	next?: Name;
+	previous?: Name;
+
+	constructor(options: BuildingOptions) {
+		Object.assign(this, options);
+
+		Building.collection.set(this.name, this);
+	}
+
+	dependsOn(name: Name): boolean {
+		if (this.requiredBuildings.includes(name)) {
+			return true;
+		}
+
+		if (this.previous) {
+			return Building.resolve(this.previous).dependsOn(name);
+		}
+
+		return false;
+	}
+
+	isUpgradeOf(name: Name): boolean {
+		const building = Building.resolve(name);
+
+		if (this.name === building.next) {
+			return true;
+		}
+
+		return !!building.next && this.isUpgradeOf(building.next);
 	}
 }

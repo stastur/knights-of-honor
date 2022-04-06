@@ -1,4 +1,4 @@
-import * as buildings from "../../core/buildings";
+import * as buildings from "../buildings";
 import { ProvinceFeature } from "../../core/enums";
 import { BuildingStatus, Province } from "../../core/types";
 

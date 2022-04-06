@@ -1,14 +1,18 @@
-import { Province } from "./province";
-import {
+import { has, merge } from "@app/utils";
+
+import type { Province } from "./province";
+import type {
 	AreaResource,
 	ProvinceResource,
 	RuralAreaType,
 	TownResource,
 } from "./types";
 
-import { has, merge } from "../../utils";
-
 export interface Bonus {
+	target: Target;
+	resource: TownResource | ProvinceResource | AreaResource;
+	value: number;
+
 	for: (province: Province) => BonusResources;
 }
 
@@ -26,13 +30,19 @@ type TargetToBonus = {
 type Target = keyof TargetToBonus;
 
 export class ResourceBonus<T extends Target> implements Bonus {
-	constructor(
-		private options: {
-			target: T;
-			resource: TargetToBonus[T];
-			value: number;
-		}
-	) {}
+	target: T;
+	resource: TargetToBonus[T];
+	value: number;
+
+	constructor(options: {
+		target: T;
+		resource: TargetToBonus[T];
+		value: number;
+	}) {
+		this.target = options.target;
+		this.resource = options.resource;
+		this.value = options.value;
+	}
 
 	static combine(...resourceCollection: BonusResources[]): BonusResources {
 		return resourceCollection.reduce(merge, ResourceBonus.getInitial());
@@ -54,7 +64,7 @@ export class ResourceBonus<T extends Target> implements Bonus {
 	for(province: Province): BonusResources {
 		let affectedAreas = 0;
 
-		switch (this.options.target) {
+		switch (this.target) {
 			case "town":
 				affectedAreas = 1;
 				break;
@@ -63,13 +73,13 @@ export class ResourceBonus<T extends Target> implements Bonus {
 				break;
 			default:
 				affectedAreas = province.areas.filter(
-					has({ type: this.options.target })
+					has({ type: this.target })
 				).length;
 		}
 
 		return {
 			...ResourceBonus.getInitial(),
-			[this.options.resource]: affectedAreas * this.options.value,
+			[this.resource]: affectedAreas * this.value,
 		};
 	}
 }

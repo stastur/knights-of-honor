@@ -1,7 +1,8 @@
-import { sumBy } from "../../utils";
+import { sumBy } from "@app/utils";
+
 import { Province } from "./province";
 
-export class Country {
+export class Kingdom {
 	provinces: Province[] = [];
 
 	constructor(public name: string) {}
