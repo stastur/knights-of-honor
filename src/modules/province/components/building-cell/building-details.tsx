@@ -37,6 +37,11 @@ export const BuildingDetails = ({
 			zIndex={1}
 			color="white"
 			backgroundColor="blackAlpha.700"
+			boxShadow={`
+				0 0 0 1px black,
+				0 0 0 2px #e4cb79,
+				0 0 0 3px black
+			`}
 			_peerHover={{ display: "block" }}
 			{...boxProps}
 		>
