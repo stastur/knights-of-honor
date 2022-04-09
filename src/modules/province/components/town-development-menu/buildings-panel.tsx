@@ -3,7 +3,7 @@ import { Box, Grid, useDisclosure } from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
 
 import { Times } from "@app/components/times";
-import { useProvinceContext } from "@app/contexts/province-context";
+import { useProvince } from "@app/contexts/province-context";
 
 import { AvailableImprovementsMenu } from "../available-improvements-menu";
 import { BuildingCell } from "../building-cell";
@@ -13,8 +13,8 @@ import { useControlBox, ControlBox } from "./control-box";
 const MAX_BUILDINGS = 18;
 
 export const BuildingsPanel = observer((): JSX.Element => {
+	const province = useProvince();
 	const { isOpen, onClose, onToggle } = useDisclosure();
-	const { province } = useProvinceContext();
 	const { itemsToBeRemoved, ...controlBoxProps } = useControlBox();
 
 	return (

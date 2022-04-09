@@ -3,7 +3,7 @@ import { Box, BoxProps, CloseButton, IconButton } from "@chakra-ui/react";
 import { GiArmorUpgrade } from "react-icons/gi";
 
 import { Building } from "@app/core/entities/building";
-import { useProvinceContext } from "@app/contexts/province-context";
+import { useDevelopmentManager } from "@app/contexts/development-context";
 
 interface UseControlBoxReturn {
 	itemsToBeRemoved: Array<Building["name"]>;
@@ -13,7 +13,7 @@ interface UseControlBoxReturn {
 }
 
 export const useControlBox = (): UseControlBoxReturn => {
-	const { developmentManager } = useProvinceContext();
+	const developmentManager = useDevelopmentManager();
 	const [toBeRemoved, setToBeRemoved] = useState<Building["name"][]>([]);
 
 	const onMouseEnter = useCallback(
@@ -55,8 +55,8 @@ export const ControlBox = ({
 	...boxProps
 }: ControlBoxProps &
 	Omit<BoxProps, "onMouseEnter" | "onMouseLeave">): JSX.Element => {
-	const { name, next: upgradesTo } = building;
-	const { developmentManager } = useProvinceContext();
+	const { name, next } = building;
+	const developmentManager = useDevelopmentManager();
 
 	const handleRemoveButtonClick = (event: MouseEvent<HTMLButtonElement>) =>
 		developmentManager.destroy(event.currentTarget.name as Building["name"]);
@@ -66,7 +66,7 @@ export const ControlBox = ({
 			{children}
 
 			<IconButton
-				visibility={upgradesTo ? "visible" : "hidden"}
+				visibility={next ? "visible" : "hidden"}
 				color="gold"
 				aria-label="upgrade"
 				variant="ghost"
@@ -74,7 +74,7 @@ export const ControlBox = ({
 				position="absolute"
 				left="0"
 				bottom="0"
-				onClick={() => upgradesTo && developmentManager.build(upgradesTo)}
+				onClick={() => next && developmentManager.build(next)}
 			/>
 
 			<CloseButton

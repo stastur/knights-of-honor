@@ -12,6 +12,7 @@
 		"noEmit": true,
 		"experimentalDecorators": true,
 		"esModuleInterop": true,
+		"resolveJsonModule": true,
 		"baseUrl": "src",
 		"paths": {
 			"@app/*": ["./*"]

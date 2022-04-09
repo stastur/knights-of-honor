@@ -1,5 +1,6 @@
 import React from "react";
 import { Box, BoxProps, Text } from "@chakra-ui/react";
+import { useTranslation } from "react-i18next";
 
 import { Building } from "@app/core/entities/building";
 
@@ -13,6 +14,8 @@ export const BuildingDetails = ({
 	building,
 	...boxProps
 }: BuildingDetailsProps & BoxProps): JSX.Element => {
+	const { t } = useTranslation();
+
 	const {
 		name,
 		requiredFeatures,
@@ -23,6 +26,8 @@ export const BuildingDetails = ({
 		workers,
 	} = building;
 	const { description } = assetMap[name];
+
+	const requirements = [...requiredFeatures, ...requiredBuildings].map(t);
 
 	return (
 		<Box
@@ -36,30 +41,23 @@ export const BuildingDetails = ({
 			{...boxProps}
 		>
 			<Text fontWeight="bold">
-				{name} (gold: {cost}, workers: {workers})
+				{t(name)} (gold: {cost}, workers: {workers})
 			</Text>
 			<Text>{description}</Text>
 
+			{requirements.length > 0 && (
+				<Text>{t("requires", { value: requirements.join("; ") })}</Text>
+			)}
+
 			{bonuses.length > 0 && (
 				<Text>
-					Bonuses:{" "}
-					{bonuses
-						.map(({ value, resource, target }) => {
-							return `+${value} ${resource} in ${target}`;
-						})
-						.join("; ")}
+					{t("bonuses", {
+						value: bonuses.map((options) => t("bonus", options)).join("; "),
+					})}
 				</Text>
 			)}
 
-			{requiredFeatures.length > 0 && (
-				<Text>Required features: {requiredFeatures.join(";")}</Text>
-			)}
-
-			{requiredBuildings.length > 0 && (
-				<Text>Required buildings: {requiredBuildings.join(";")}</Text>
-			)}
-
-			{next && <Text>Upgradeable to: {next}</Text>}
+			{next && <Text>{t("upgradeable", { to: t(next) })}</Text>}
 		</Box>
 	);
 };

@@ -13,7 +13,7 @@ import { GiCancel, GiLightningStorm } from "react-icons/gi";
 
 import { Project } from "@app/core/managers/development-manager";
 import { Building } from "@app/core/entities/building";
-import { useProvinceContext } from "@app/contexts/province-context";
+import { useDevelopmentManager } from "@app/contexts/development-context";
 
 import { BuildingCell } from "./building-cell";
 
@@ -21,7 +21,7 @@ export const DevelopmentProject = observer(
 	({ name, progress, total, ...boxProps }: Project & BoxProps): JSX.Element => {
 		const building = Building.resolve(name);
 
-		const { developmentManager } = useProvinceContext();
+		const developmentManager = useDevelopmentManager();
 
 		return (
 			<Box {...boxProps}>
@@ -49,13 +49,13 @@ export const DevelopmentProject = observer(
 						right={0}
 					>
 						<IconButton
-							icon={<GiLightningStorm />}
+							icon={<GiCancel />}
 							aria-label="Cancel project"
 							onClick={() => developmentManager.destroy(name)}
 						/>
 
 						<IconButton
-							icon={<GiCancel />}
+							icon={<GiLightningStorm />}
 							aria-label="Force project"
 							onClick={() => developmentManager.forceProject(name)}
 						/>

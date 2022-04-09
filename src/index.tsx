@@ -2,36 +2,28 @@ import React from "react";
 import { render } from "react-dom";
 import { ChakraProvider } from "@chakra-ui/react";
 
-import { baseBuildings } from "@app/core/collections/buildings";
+import "@app/modules/i18n";
 import { ControlPanel } from "@app/modules/province/components/control-panel";
-import { DevelopmentManagerObservable } from "@app/observables/development-manager";
-import { ProvinceObservable } from "@app/observables/province";
-import { KingdomObservable } from "@app/observables/kingdom";
+
+import { TimerProvider } from "./contexts/timer-context";
+import { DevelopmentManagerProvider } from "./contexts/development-context";
+import { KingdomProvider } from "./contexts/kingdom-context";
+import { ProvinceProvider } from "./contexts/province-context";
 
 import "./styles.css";
-
-const province = new ProvinceObservable("Brest");
-baseBuildings.forEach((b) => province.addBuilding(b));
-
-province.features = ["fishery", "marbleDeposits"];
-
-const developmentManager = new DevelopmentManagerObservable(province);
-const kingdom = new KingdomObservable("Belarus");
-
-kingdom.provinces.push(province);
-
-setInterval(() => {
-	province.update();
-	developmentManager.update();
-}, 100);
 
 render(
 	<React.StrictMode>
 		<ChakraProvider>
-			<ControlPanel
-				province={province}
-				developmentManager={developmentManager}
-			/>
+			<TimerProvider interval={100}>
+				<KingdomProvider name="Stanland">
+					<ProvinceProvider name="Stanwill">
+						<DevelopmentManagerProvider>
+							<ControlPanel />
+						</DevelopmentManagerProvider>
+					</ProvinceProvider>
+				</KingdomProvider>
+			</TimerProvider>
 		</ChakraProvider>
 	</React.StrictMode>,
 	document.getElementById("app")

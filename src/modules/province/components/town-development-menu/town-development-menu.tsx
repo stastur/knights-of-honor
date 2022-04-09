@@ -12,7 +12,8 @@ import {
 } from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
 
-import { useProvinceContext } from "@app/contexts/province-context";
+import { useDevelopmentManager } from "@app/contexts/development-context";
+import { useProvince } from "@app/contexts/province-context";
 import { Times } from "@app/components/times";
 
 import { DevelopmentProject } from "../development-project";
@@ -24,8 +25,8 @@ const MAX_FEATURES = 3;
 
 export const TownDevelopmentMenu = observer(
 	({ children, ...props }: PopoverProps): JSX.Element => {
-		const { developmentManager, province } = useProvinceContext();
-
+		const province = useProvince();
+		const developmentManager = useDevelopmentManager();
 		return (
 			<Popover {...props}>
 				<PopoverTrigger>{children}</PopoverTrigger>

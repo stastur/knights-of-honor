@@ -8,11 +8,11 @@ import {
 } from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
 
-import { useProvinceContext } from "@app/contexts/province-context";
+import { useProvince } from "@app/contexts/province-context";
 
 export const HappinessMenu = observer(
 	({ children, ...restProps }: PopoverProps): JSX.Element => {
-		const { province } = useProvinceContext();
+		const province = useProvince();
 
 		return (
 			<Popover {...restProps}>

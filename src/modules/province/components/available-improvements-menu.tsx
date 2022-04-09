@@ -13,8 +13,9 @@ import {
 	Tabs,
 } from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
+import { useTranslation } from "react-i18next";
 
-import { useProvinceContext } from "@app/contexts/province-context";
+import { useDevelopmentManager } from "@app/contexts/development-context";
 import { mainBuildings } from "@app/core/collections/buildings";
 import { groupBy } from "@app/utils";
 
@@ -24,14 +25,15 @@ const groups = groupBy(mainBuildings, "type");
 
 export const AvailableImprovementsMenu = observer(
 	({ isOpen, onClose, children, ...restProps }: PopoverProps): JSX.Element => {
-		const { developmentManager } = useProvinceContext();
+		const developmentManager = useDevelopmentManager();
+		const { t } = useTranslation();
 
 		return (
 			<Popover isOpen={isOpen} onClose={onClose} {...restProps}>
 				<PopoverTrigger>{children}</PopoverTrigger>
 
 				<PopoverContent width="max-content">
-					<PopoverHeader>Available improvements</PopoverHeader>
+					<PopoverHeader>{t("availableImprovements")}</PopoverHeader>
 					<Tabs>
 						<TabList>
 							{Object.keys(groups).map((type) => (
