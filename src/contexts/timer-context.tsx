@@ -16,31 +16,34 @@ class Timer {
 		});
 	}
 
-	clearInterval = () => {
-		this.intervalId && window.clearInterval(this.intervalId);
+	clearInterval = (): void => {
+		if (this.intervalId) {
+			window.clearInterval(this.intervalId);
+			this.intervalId = null;
+		}
 	};
 
-	start() {
+	start = (): void => {
 		if (!this.intervalId) {
 			this.intervalId = window.setInterval(this.tick, this.interval);
 		}
-	}
+	};
 
-	pause = () => {
+	pause = (): void => {
 		this.clearInterval();
 	};
 
-	stop = () => {
+	stop = (): void => {
 		this.ticks = 0;
 		this.clearInterval();
 	};
 
-	tick = () => {
+	tick = (): void => {
 		this.ticks++;
 	};
 }
 
-const [TimerContextProvider, useTimerContext] = createContext<Timer>();
+const [TimerContextProvider, useTimer] = createContext<Timer>();
 
 interface TimerProviderProps {
 	interval?: number;
@@ -62,7 +65,7 @@ export const TimerProvider = ({
 };
 
 export const useTimerEffect = (callback: () => void): void => {
-	const timer = useTimerContext();
+	const timer = useTimer();
 
 	useEffect(() => {
 		return autorun(() => {
@@ -71,3 +74,5 @@ export const useTimerEffect = (callback: () => void): void => {
 		});
 	}, []);
 };
+
+export { useTimer };

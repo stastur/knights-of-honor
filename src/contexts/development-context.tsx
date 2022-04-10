@@ -10,8 +10,6 @@ import { useTimerEffect } from "./timer-context";
 import { useProvince } from "./province-context";
 
 export class $DevelopmentManager extends DevelopmentManager {
-	static instances = 0;
-
 	constructor(province: Province) {
 		super(province);
 
@@ -24,12 +22,6 @@ export class $DevelopmentManager extends DevelopmentManager {
 
 			forceProject: action,
 		});
-
-		$DevelopmentManager.instances++;
-
-		if ($DevelopmentManager.instances > 1) {
-			console.error("check DM!");
-		}
 	}
 }
 

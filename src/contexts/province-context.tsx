@@ -56,7 +56,9 @@ const ProvinceProvider = observer(
 		const province = new $Province(name);
 
 		useEffect(() => {
-			kingdom.provinces.push(province);
+			runInAction(() => {
+				kingdom.provinces.push(province);
+			});
 
 			// TODO: generation and sync
 			runInAction(() => {

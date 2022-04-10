@@ -6,7 +6,7 @@ export class FinanceManager {
 	piety = 1000;
 	books = 1000;
 
-	constructor(private kingdom: Kingdom) {}
+	constructor(public kingdom: Kingdom) {}
 
 	replenish(resource: CountryResource, value: number): void {
 		this[resource] += value;

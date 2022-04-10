@@ -4,12 +4,14 @@ import { ChakraProvider } from "@chakra-ui/react";
 
 import "@app/modules/i18n";
 import { ControlPanel } from "@app/modules/province/components/control-panel";
+import { Panel } from "@app/modules/kingdom/panel";
 
 import {
 	TimerProvider,
 	DevelopmentManagerProvider,
 	KingdomProvider,
 	ProvinceProvider,
+	FinanceManagerProvider,
 } from "@app/contexts";
 
 import "./styles.css";
@@ -19,11 +21,14 @@ render(
 		<ChakraProvider>
 			<TimerProvider interval={100}>
 				<KingdomProvider name="Stanland">
-					<ProvinceProvider name="Stanwill">
-						<DevelopmentManagerProvider>
-							<ControlPanel />
-						</DevelopmentManagerProvider>
-					</ProvinceProvider>
+					<FinanceManagerProvider>
+						<Panel />
+						<ProvinceProvider name="Stanwill">
+							<DevelopmentManagerProvider>
+								<ControlPanel />
+							</DevelopmentManagerProvider>
+						</ProvinceProvider>
+					</FinanceManagerProvider>
 				</KingdomProvider>
 			</TimerProvider>
 		</ChakraProvider>
