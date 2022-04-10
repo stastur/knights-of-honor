@@ -3,8 +3,8 @@ import { makeObservable, observable, action } from "mobx";
 import { observer } from "mobx-react-lite";
 
 import { createContext } from "@app/utils";
-import { DevelopmentManager } from "@app/core/managers/development-manager";
-import { Province } from "@app/core/entities/province";
+import { DevelopmentManager } from "@app/core/managers";
+import { Province } from "@app/core/entities";
 
 import { useTimerEffect } from "./timer-context";
 import { useProvince } from "./province-context";

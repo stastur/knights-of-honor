@@ -3,7 +3,8 @@ import { Box, Grid, useDisclosure } from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
 
 import { Times } from "@app/components/times";
-import { useProvince } from "@app/contexts/province-context";
+import { useProvince } from "@app/contexts";
+import { values } from "@app/utils";
 
 import { AvailableImprovementsMenu } from "../available-improvements-menu";
 import { BuildingCell } from "../building-cell";
@@ -29,7 +30,7 @@ export const BuildingsPanel = observer((): JSX.Element => {
 				templateRows="repeat(6, 1fr)"
 				gap={2}
 			>
-				{province.buildings.map((b) => (
+				{values(province.buildings).map((b) => (
 					<ControlBox
 						{...controlBoxProps}
 						key={b.name}
@@ -42,11 +43,11 @@ export const BuildingsPanel = observer((): JSX.Element => {
 						_focus={{ outline: "1px solid gold" }}
 						_hover={{ outline: "1px solid gold" }}
 					>
-						<BuildingCell building={b} onClick={onToggle} />
+						<BuildingCell building={b} />
 					</ControlBox>
 				))}
 
-				<Times n={MAX_BUILDINGS - province.buildings.length}>
+				<Times n={MAX_BUILDINGS - province.buildings.size}>
 					<Box
 						width="100%"
 						height="100%"

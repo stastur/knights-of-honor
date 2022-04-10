@@ -1,13 +1,15 @@
+import { values } from "@app/utils";
+
 import { Building } from "../entities/building";
 import { Province } from "../entities/province";
 
+type BuildingName = Building["name"];
+
 export interface Project {
-	name: Building["name"];
+	name: BuildingName;
 	progress: number;
 	total: number;
 }
-
-type BuildingName = Building["name"];
 
 export class DevelopmentManager {
 	projects: Map<BuildingName, Project> = new Map();
@@ -21,10 +23,12 @@ export class DevelopmentManager {
 	}
 
 	private hasBuildingsFor(building: Building): boolean {
-		return building.requiredBuildings.every((name) =>
-			this.province.buildings.some(
-				(b) => b.name === name || b.isUpgradeOf(name)
-			)
+		const { buildings } = this.province;
+
+		return building.requiredBuildings.every(
+			(name) =>
+				buildings.has(name) ||
+				values(buildings).some((b) => b.isUpgradeOf(name))
 		);
 	}
 
@@ -35,7 +39,11 @@ export class DevelopmentManager {
 			return "no";
 		}
 
-		if (building.requiredBuildings.some((b) => this.canBuild(b) === "no")) {
+		const canBuildRequiredBuildings = building.requiredBuildings.every(
+			(b) => this.canBuild(b) !== "no"
+		);
+
+		if (!canBuildRequiredBuildings) {
 			return "no";
 		}
 
@@ -72,13 +80,13 @@ export class DevelopmentManager {
 	}
 
 	getRelevantVariant(name: BuildingName): Building | null {
-		const building = Building.resolve(name);
 		const { buildings } = this.province;
+		const building = Building.resolve(name);
 
-		if (
-			!buildings.includes(building) &&
-			!buildings.some((b) => b.isUpgradeOf(name))
-		) {
+		const isBuilt = buildings.has(name);
+		const isUpgraded = values(buildings).some((b) => b.isUpgradeOf(name));
+
+		if (!isBuilt && !isUpgraded) {
 			return building;
 		}
 
@@ -91,14 +99,26 @@ export class DevelopmentManager {
 
 	destroy(name: BuildingName): void {
 		this.projects.delete(name);
-		this.getDependents(name).forEach((name) => this.destroy(name));
-		this.province.removeBuilding(Building.resolve(name));
+
+		this.getDependents(name).forEach((dependent) => this.destroy(dependent));
+
+		this.projects.forEach(
+			(_, projectName) =>
+				Building.resolve(projectName).dependsOn(name) &&
+				this.projects.delete(projectName)
+		);
+
+		this.province.removeBuilding(name);
 	}
 
 	getDependents(name: BuildingName): BuildingName[] {
-		return this.province.buildings
-			.filter((b) => b.dependsOn(name))
-			.map((b) => b.name);
+		const dependents: BuildingName[] = [];
+
+		for (const b of this.province.buildings.values()) {
+			b.dependsOn(name) && dependents.push(b.name);
+		}
+
+		return dependents;
 	}
 
 	update(): void {
@@ -114,16 +134,8 @@ export class DevelopmentManager {
 		this.projects.delete(project.name);
 
 		const newBuilding = Building.resolve(project.name);
+		newBuilding.previous && this.province.removeBuilding(newBuilding.previous);
 
-		if (newBuilding.previous) {
-			const index = this.province.buildings.indexOf(
-				Building.resolve(newBuilding.previous)
-			);
-
-			this.province.buildings[index] = newBuilding;
-			return;
-		}
-
-		this.province.addBuilding(newBuilding);
+		this.province.addBuilding(newBuilding.name);
 	};
 }

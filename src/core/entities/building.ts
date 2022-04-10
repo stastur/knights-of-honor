@@ -118,7 +118,16 @@ export class Building {
 	}
 
 	dependsOn(name: Name): boolean {
-		if (this.requiredBuildings.includes(name)) {
+		if (this.name === name) {
+			return false;
+		}
+
+		const isRequired = this.requiredBuildings.some(
+			(required) =>
+				required === name || Building.resolve(name).isUpgradeOf(required)
+		);
+
+		if (isRequired) {
 			return true;
 		}
 

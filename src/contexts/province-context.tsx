@@ -9,9 +9,8 @@ import {
 } from "mobx";
 
 import { createContext } from "@app/utils";
-import { Province } from "@app/core/entities/province";
-
-import { baseBuildings } from "@app/core/collections/buildings";
+import { Province } from "@app/core/entities";
+import { baseBuildings } from "@app/core/collections";
 
 import { useTimerEffect } from "./timer-context";
 import { useKingdom } from "./kingdom-context";
@@ -62,7 +61,7 @@ const ProvinceProvider = observer(
 			// TODO: generation and sync
 			runInAction(() => {
 				province.features.push("fishery", "marbleDeposits");
-				province.buildings.push(...baseBuildings);
+				baseBuildings.forEach((b) => province.addBuilding(b.name));
 			});
 		}, []);
 

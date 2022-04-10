@@ -2,7 +2,7 @@ import React, { PropsWithChildren } from "react";
 import { makeObservable, computed, observable } from "mobx";
 
 import { createContext } from "@app/utils";
-import { Kingdom } from "@app/core/entities/kingdom";
+import { Kingdom } from "@app/core/entities";
 
 export class $Kingdom extends Kingdom {
 	constructor(name: string) {

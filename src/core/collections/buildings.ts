@@ -1,4 +1,4 @@
-import { has } from "@app/utils";
+import { has, values } from "@app/utils";
 
 import { Building } from "../entities/building";
 import { ResourceBonus } from "../entities/bonus";
@@ -279,7 +279,6 @@ export const harbour = new Building({
 	type: "advanced",
 	workers: 800,
 	cost: 3000,
-	previous: "docks",
 	next: "admiralty",
 	requiredFeatures: [],
 	requiredBuildings: ["docks"],
@@ -735,7 +734,7 @@ export const winery = new Building({
 	bonuses: [],
 });
 
-export const allBuildings = Array.from(Building.collection.values());
+export const allBuildings = values(Building.collection);
 
 export const mainBuildings = allBuildings.filter(has({ previous: undefined }));
 

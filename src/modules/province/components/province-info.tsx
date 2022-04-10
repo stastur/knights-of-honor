@@ -11,7 +11,7 @@ import {
 } from "react-icons/gi";
 
 import { IconMeter } from "@app/components/icon-meter";
-import { useProvince } from "@app/contexts/province-context";
+import { useProvince } from "@app/contexts";
 
 export const ProvinceInfo = observer((props: BoxProps): JSX.Element => {
 	const province = useProvince();

@@ -1,10 +1,9 @@
 import React from "react";
 import { Box, BoxProps, Image } from "@chakra-ui/react";
+import { useTranslation } from "react-i18next";
 
-import { Building } from "@app/core/entities/building";
-import { noop } from "@app/utils";
+import { Building } from "@app/core/entities";
 
-import { assetMap } from "./asset-map";
 import { BuildingDetails } from "./building-details";
 
 interface BuildingCellProps {
@@ -21,22 +20,14 @@ const filters = {
 export const BuildingCell = ({
 	building,
 	constructable = "yes",
-	onClick = noop,
 	...boxProps
 }: BuildingCellProps & BoxProps): JSX.Element => {
-	const { assetName } = assetMap[building.name];
-	const source = `/images/buildings/${assetName}`;
+	const { t } = useTranslation();
 
 	return (
-		<Box
-			onClick={onClick}
-			position="relative"
-			tabIndex={0}
-			role="group"
-			{...boxProps}
-		>
+		<Box position="relative" role="group" {...boxProps}>
 			<Image
-				src={source}
+				src={t("assetPath", { name: building.name, context: "buildings" })}
 				alt={building.name}
 				data-peer
 				filter={filters[constructable]}

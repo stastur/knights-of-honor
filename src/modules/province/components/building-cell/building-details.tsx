@@ -2,9 +2,7 @@ import React from "react";
 import { Box, BoxProps, Text } from "@chakra-ui/react";
 import { useTranslation } from "react-i18next";
 
-import { Building } from "@app/core/entities/building";
-
-import { assetMap } from "./asset-map";
+import { Building } from "@app/core/entities";
 
 interface BuildingDetailsProps {
 	building: Building;
@@ -25,9 +23,10 @@ export const BuildingDetails = ({
 		cost,
 		workers,
 	} = building;
-	const { description } = assetMap[name];
 
-	const requirements = [...requiredFeatures, ...requiredBuildings].map(t);
+	const requirements = [...requiredFeatures, ...requiredBuildings].map((r) =>
+		t(`${r}.name`)
+	);
 
 	return (
 		<Box
@@ -46,9 +45,9 @@ export const BuildingDetails = ({
 			{...boxProps}
 		>
 			<Text fontWeight="bold">
-				{t(name)} (gold: {cost}, workers: {workers})
+				{t(`${name}.name`)} (gold: {cost}, workers: {workers})
 			</Text>
-			<Text>{description}</Text>
+			<Text>{t(`${name}.description`)}</Text>
 
 			{requirements.length > 0 && (
 				<Text>{t("requires", { value: requirements.join("; ") })}</Text>
@@ -62,7 +61,7 @@ export const BuildingDetails = ({
 				</Text>
 			)}
 
-			{next && <Text>{t("upgradeable", { to: t(next) })}</Text>}
+			{next && <Text>{t("upgradeable", { to: t(`${next}.name`) })}</Text>}
 		</Box>
 	);
 };

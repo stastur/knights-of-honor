@@ -15,8 +15,8 @@ import {
 import { observer } from "mobx-react-lite";
 import { useTranslation } from "react-i18next";
 
-import { useDevelopmentManager } from "@app/contexts/development-context";
-import { mainBuildings } from "@app/core/collections/buildings";
+import { useDevelopmentManager } from "@app/contexts";
+import { mainBuildings } from "@app/core/collections";
 import { groupBy } from "@app/utils";
 
 import { BuildingCell } from "./building-cell";
@@ -29,7 +29,12 @@ export const AvailableImprovementsMenu = observer(
 		const { t } = useTranslation();
 
 		return (
-			<Popover isOpen={isOpen} onClose={onClose} {...restProps}>
+			<Popover
+				isOpen={isOpen}
+				onClose={onClose}
+				closeOnBlur={false}
+				{...restProps}
+			>
 				<PopoverTrigger>{children}</PopoverTrigger>
 
 				<PopoverContent width="max-content">

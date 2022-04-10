@@ -1,5 +1,3 @@
-import { without } from "@app/utils";
-
 import { Building } from "./building";
 import { RuralArea } from "./rural-area";
 import { BonusResource, ResourceBonus } from "./bonus";
@@ -8,7 +6,7 @@ import { AreaResource, Feature, RuralAreaType } from "./types";
 export class Province {
 	areas: RuralArea[] = [];
 	features: Feature[] = [];
-	buildings: Building[] = [];
+	buildings = new Map<Building["name"], Building>();
 
 	private _gold = 1;
 	private _food = 1;
@@ -47,12 +45,14 @@ export class Province {
 		return { limit, value };
 	}
 
-	addBuilding(b: Building): void {
-		this.buildings.push(b);
+	addBuilding(...buildings: Array<Building["name"]>): void {
+		buildings.forEach((name) =>
+			this.buildings.set(name, Building.resolve(name))
+		);
 	}
 
-	removeBuilding(...buildings: Building[]): void {
-		this.buildings = without(this.buildings, ...buildings);
+	removeBuilding(...buildings: Array<Building["name"]>): void {
+		buildings.forEach((name) => this.buildings.delete(name));
 	}
 
 	update(): void {
@@ -73,7 +73,9 @@ export class Province {
 	}
 
 	private getBonusResource(resource: BonusResource): number {
-		return this.buildings
+		const buildings = Array.from(this.buildings.values());
+
+		return buildings
 			.flatMap((b) => b.bonuses)
 			.reduce(
 				(resources, bonus) => ResourceBonus.combine(resources, bonus.for(this)),
