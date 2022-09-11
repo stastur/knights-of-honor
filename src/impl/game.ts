@@ -1,34 +1,60 @@
+import { Map } from "./map";
+import { Entity } from "./types";
+
 const TARGET_FPS = 60;
 const ONE_SECOND = 1000;
 const FRAME_INTERVAL = ONE_SECOND / TARGET_FPS;
 
+interface FrameInfo {
+	stopFrame?: number;
+	elapsed: number;
+	currentFrame: number;
+	fps: number;
+}
+
 export class Game {
-	entities = new Set<{
-		update: (ctx: Game) => void;
-		render: (ctx: Game) => void;
-	}>();
+	entities = new Set<Entity>();
+	map = new Map();
 
-	state: { then: number; frame?: number; elapsed: number } = {
-		then: performance.now(),
+	frameInfo: FrameInfo = {
 		elapsed: 0,
-	};
-
-	#loop = (now: number): void => {
-		this.state.frame = requestAnimationFrame(this.#loop);
-
-		const elapsed = now - this.state.then;
-
-		if (elapsed >= FRAME_INTERVAL) {
-			this.state.then = now - (elapsed % FRAME_INTERVAL);
-			this.state.elapsed = elapsed;
-
-			this.update(this);
-			this.render(this);
-		}
+		currentFrame: 0,
+		fps: 0,
 	};
 
 	start = (): void => {
-		this.state.frame = requestAnimationFrame(this.#loop);
+		let then = performance.now();
+		let lastMeasurement = then;
+		let frames = 0;
+
+		const loop = (now: number): void => {
+			this.frameInfo.stopFrame = requestAnimationFrame(loop);
+
+			const elapsed = now - then;
+
+			if (elapsed >= FRAME_INTERVAL) {
+				then = now - (elapsed % FRAME_INTERVAL);
+				this.frameInfo.elapsed = elapsed;
+
+				// count FPS
+				{
+					frames++;
+					this.frameInfo.currentFrame++;
+
+					if (now - lastMeasurement >= 1000) {
+						this.frameInfo.fps = frames;
+						this.frameInfo.currentFrame = 0;
+						frames = 0;
+						lastMeasurement = now;
+					}
+				}
+
+				this.update(this);
+				this.render(this);
+			}
+		};
+
+		this.frameInfo.stopFrame = requestAnimationFrame(loop);
 	};
 
 	update(ctx: Game): void {
@@ -40,10 +66,10 @@ export class Game {
 	}
 
 	stop(): void {
-		const { frame } = this.state;
+		const { stopFrame: frame } = this.frameInfo;
 
 		if (frame === undefined) {
-			return console.warn("Loop hasn't been started");
+			return console.warn("Loop hasn't started");
 		}
 
 		cancelAnimationFrame(frame);

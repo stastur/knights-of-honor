@@ -1,11 +1,9 @@
-import { Game } from "./game";
-import { Entity } from "./types";
+import { createNoise } from "../utils/createNoise";
 
-const WATER = 0;
-const GROUND = 1;
-
-export class Map implements Entity {
+export class Map {
 	size = 20;
+	tiles: number[][] = [];
+	noise = createNoise("PhysicalMap");
 
 	constructor() {
 		const columns = Math.floor(document.body.clientWidth / this.size);
@@ -29,21 +27,47 @@ export class Map implements Entity {
 			ctx.scale(scale, scale);
 		}
 
-		canvas.style.border = "1px solid #03a9f4";
-		ctx.strokeStyle = "#03a9f4";
+		// draw grid lines
+		{
+			canvas.style.border = "1px solid #03a9f4";
+			ctx.strokeStyle = "#03a9f4";
 
-		for (let i = 1; i < rows; i++) {
-			ctx.moveTo(0, i * this.size);
-			ctx.lineTo(canvas.width, i * this.size);
-			ctx.stroke();
+			for (let i = 1; i < rows; i++) {
+				ctx.moveTo(0, i * this.size);
+				ctx.lineTo(canvas.width, i * this.size);
+				ctx.stroke();
+			}
+
+			for (let i = 1; i < columns; i++) {
+				ctx.moveTo(i * this.size, 0);
+				ctx.lineTo(i * this.size, canvas.height);
+				ctx.stroke();
+			}
 		}
 
-		for (let i = 1; i < columns; i++) {
-			ctx.moveTo(i * this.size, 0);
-			ctx.lineTo(i * this.size, canvas.height);
-			ctx.stroke();
+		// initialize and draw tile map
+		{
+			for (let i = 0; i < rows; i++) {
+				this.tiles.push(new Array(columns).fill(0));
+			}
+
+			for (let row = 0; row < rows; row++) {
+				for (let col = 0; col < columns; col++) {
+					this.tiles[row][col] = this.noise({
+						x: col / columns,
+						y: row / rows,
+						layers: 20,
+						smoothing: 2,
+						details: 2,
+					});
+
+					this.tiles[row][col] < 0.5 &&
+						this.shade(ctx, col * this.size, row * this.size);
+				}
+			}
 		}
 
+		canvas.style.position = "absolute";
 		document.body.appendChild(canvas);
 	}
 
@@ -52,8 +76,9 @@ export class Map implements Entity {
 		const h = this.size;
 		const rect = new Path2D();
 
-		const intersectionPoints = 4;
+		const intersectionPoints = 3;
 		const distanceCoefficient = 1 / intersectionPoints;
+
 		for (let i = 1; i < intersectionPoints * 2; i++) {
 			const c1 = Math.max(i * distanceCoefficient - 1, 0);
 			const c2 = Math.min(i * distanceCoefficient, 1);
@@ -65,7 +90,4 @@ export class Map implements Entity {
 		ctx.lineJoin = "round";
 		ctx.stroke(rect);
 	}
-
-	render(_ctx: Game): void {}
-	update(_ctx: Game): void {}
 }

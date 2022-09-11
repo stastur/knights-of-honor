@@ -3,10 +3,6 @@ import { Entity } from "./types";
 
 export class FpsInfo implements Entity {
 	box: HTMLElement;
-	frames = 0;
-	fps = 0;
-
-	time?: number;
 
 	constructor() {
 		this.box = document.createElement("div");
@@ -23,21 +19,9 @@ export class FpsInfo implements Entity {
 		document.body.appendChild(this.box);
 	}
 
-	render(): void {
-		this.box.textContent = `FPS: ${this.fps}`;
+	render(ctx: Game): void {
+		this.box.textContent = `FPS: ${ctx.frameInfo.fps}`;
 	}
 
-	update(ctx: Game): void {
-		this.frames++;
-
-		if (!this.time) {
-			this.time = ctx.state.then;
-		}
-
-		if (performance.now() - this.time >= 1000) {
-			this.fps = this.frames;
-			this.time = ctx.state.then;
-			this.frames = 0;
-		}
-	}
+	update(): void {}
 }
