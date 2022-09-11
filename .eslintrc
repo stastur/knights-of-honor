@@ -20,8 +20,14 @@
 		"no-prototype-builtins": "off",
 		"@typescript-eslint/no-unused-vars": [
 			"error",
-			{ "argsIgnorePattern": "^_" }
+			{
+				"argsIgnorePattern": "^_",
+				"varsIgnorePattern": "^_",
+				"caughtErrorsIgnorePattern": "^_"
+			}
 		],
+		"@typescript-eslint/no-empty-function": "off",
+		"@typescript-eslint/no-non-null-assertion": "off",
 		"import/no-duplicates": "warn",
 		"import/newline-after-import": "warn",
 		"import/no-named-as-default": "off",
