@@ -1,14 +1,42 @@
+/* Reset default CSS */
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+
+* {
+	margin: 0;
+}
+
 html,
-body,
-#app {
-	width: 100%;
+body {
 	height: 100%;
 }
 
-#app {
-	overflow: hidden;
+body {
+	line-height: 1.5;
+	-webkit-font-smoothing: antialiased;
 }
 
+input,
+button,
+textarea,
+select {
+	font: inherit;
+}
+
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	overflow-wrap: break-word;
+}
+/* End of reset */
+
 body {
-	margin: 0;
+	font-family: Courier, monospace;
 }

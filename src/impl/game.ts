@@ -1,5 +1,6 @@
-import { Map } from "./map";
+import { createCanvas } from "./utils";
 import { Entity } from "./types";
+import { Map } from "./map";
 
 const TARGET_FPS = 60;
 const ONE_SECOND = 1000;
@@ -22,7 +23,27 @@ export class Game {
 		fps: 0,
 	};
 
+	isRunning = false;
+	context: CanvasRenderingContext2D;
+
+	constructor() {
+		const canvas = createCanvas(
+			document.body.clientWidth,
+			document.body.clientHeight
+		);
+
+		this.context = canvas.getContext("2d")!;
+		this.context.lineJoin = "round";
+		this.context.font = "1.5rem monospace";
+
+		canvas.style.position = "absolute";
+
+		document.body.appendChild(canvas);
+	}
+
 	start = (): void => {
+		this.isRunning = true;
+
 		let then = performance.now();
 		let lastMeasurement = then;
 		let frames = 0;
@@ -50,7 +71,6 @@ export class Game {
 				}
 
 				this.update(this);
-				this.render(this);
 			}
 		};
 
@@ -58,11 +78,21 @@ export class Game {
 	};
 
 	update(ctx: Game): void {
-		this.entities.forEach((e) => e.update(ctx));
-	}
+		if (!this.isRunning) {
+			return;
+		}
 
-	render(ctx: Game): void {
-		this.entities.forEach((e) => e.render(ctx));
+		this.context.clearRect(
+			0,
+			0,
+			document.body.clientWidth,
+			document.body.clientHeight
+		);
+
+		this.map.update(ctx);
+		this.entities.forEach((e) => {
+			e.update(ctx);
+		});
 	}
 
 	stop(): void {
@@ -73,5 +103,6 @@ export class Game {
 		}
 
 		cancelAnimationFrame(frame);
+		this.isRunning = false;
 	}
 }

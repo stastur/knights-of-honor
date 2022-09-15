@@ -4,9 +4,16 @@ interface Position {
 }
 
 interface Movement {
-	readonly speed: number;
-	state: "idle" | "moving";
 	angle: number;
+	speed: number;
+	state: "idle" | "moving";
 }
 
-export type { Position, Movement };
+interface Appearance {
+	width: number;
+	height: number;
+	offset: number;
+	sprite: HTMLImageElement;
+}
+
+export type { Position, Movement, Appearance };
