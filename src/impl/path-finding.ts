@@ -1,9 +1,10 @@
 import { Position } from "./components";
+import { PriorityQueue } from "./utils";
 
-export const drawPath = (
+export function drawPath(
 	ctx: CanvasRenderingContext2D,
 	path: Position[]
-): void => {
+): void {
 	const goal = path.at(-1);
 
 	ctx.fillStyle = ctx.strokeStyle = "red";
@@ -17,86 +18,109 @@ export const drawPath = (
 	ctx.beginPath();
 	goal && ctx.arc(goal.x, goal.y, 10, 0, Math.PI * 2);
 	ctx.fill();
-};
-
-const directions = [
-	[1, 0],
-	[-1, 0],
-	[0, 1],
-	[0, -1],
-];
+}
 
 type PositionKey = `${number}x${number}`;
 
-const positionToKey = (p: Position): PositionKey => `${p.x}x${p.y}`;
+function toKey(p: Position): PositionKey {
+	return `${p.x}x${p.y}`;
+}
 
-const keyToPosition = (key: PositionKey) => {
+function toPosition(key: PositionKey) {
 	const [xString, yString] = key.split("x");
 
 	return { x: Number(xString), y: Number(yString) };
-};
+}
 
-/** @todo change algorithm to Dijkstra or A* */
-export const findPath = (
+function add(a: Position, b: Position) {
+	return { x: a.x + b.x, y: a.y + b.y };
+}
+
+function manhattanDistance(a: Position, b: Position) {
+	return Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
+}
+
+interface TileMap {
+	tiles: number[][];
+	isWalkable: (tile: number) => boolean;
+}
+
+const directions: Position[] = [
+	// orthogonal
+	{ x: 0, y: 1 },
+	{ x: 1, y: 0 },
+	{ x: -1, y: 0 },
+	{ x: 0, y: -1 },
+	// diagonal
+	{ x: -1, y: -1 },
+	{ x: 1, y: -1 },
+	{ x: -1, y: 1 },
+	{ x: 1, y: 1 },
+];
+
+function neighbors(tileMap: TileMap, tilePos: Position): Position[] {
+	return directions
+		.map((direction) => add(tilePos, direction))
+		.filter((p) => {
+			const tile = tileMap.tiles[p.y]?.[p.x];
+
+			return tile !== undefined && tileMap.isWalkable(tile);
+		});
+}
+
+export function findPath(
 	from: Position,
 	to: Position,
-	tileMap: {
-		tiles: number[][];
-		isWalkable: (tile: number) => boolean;
-	}
-): Position[] => {
-	const { tiles, isWalkable } = tileMap;
+	tileMap: TileMap
+): Position[] {
+	const frontier = new PriorityQueue<{
+		key: PositionKey;
+		distance: number;
+	}>((item) => item.distance);
 
-	const _from = positionToKey(from);
-	const _to = positionToKey(to);
+	const cameFrom = new Map<PositionKey, PositionKey>(); // Map<To, From>
+	const distances = new Map([[toKey(from), 0]]);
 
-	const getNeighbors = ({ x: tileX, y: tileY }: Position): Position[] => {
-		const neighbors = directions
-			.map(([dx, dy]) => ({ x: tileX + dx, y: tileY + dy }))
-			.filter((p) => {
-				const tile = tiles[p.y]?.[p.x];
-
-				return tile !== undefined && isWalkable(tile);
-			});
-
-		(tileX + tileY) % 2 && neighbors.reverse();
-
-		return neighbors;
-	};
-
-	const frontier: PositionKey[] = [_from];
-	const cameFrom = new Map<PositionKey, PositionKey>();
+	frontier.push({ key: toKey(from), distance: 0 });
 
 	while (frontier.length > 0) {
-		const p = frontier.shift()!;
+		const { key: current } = frontier.pop()!;
 
-		if (p === _to) {
+		if (current === toKey(to)) {
 			break;
 		}
 
-		for (const n of getNeighbors(keyToPosition(p))) {
-			const _n = positionToKey(n);
+		for (const n of neighbors(tileMap, toPosition(current))) {
+			const relativeDistance =
+				manhattanDistance(toPosition(current), n) % 2 === 0 ? Math.SQRT2 : 1;
+			const d = distances.get(current)! + relativeDistance;
+			const key = toKey(n);
 
-			if (!cameFrom.has(_n)) {
-				frontier.push(_n);
-				cameFrom.set(_n, p);
+			if (d < (distances.get(key) ?? Infinity)) {
+				distances.set(key, d);
+				cameFrom.set(key, current);
+
+				frontier.push({
+					key,
+					distance: d + manhattanDistance(n, to),
+				});
 			}
 		}
 	}
 
-	let current = _to;
+	let current = toKey(to);
 	const path: Position[] = [];
 
-	while (positionToKey(from) !== current) {
+	while (current !== toKey(from)) {
 		const next = cameFrom.get(current);
 
 		if (!next) {
 			break;
 		}
 
-		path.push(keyToPosition(current));
+		path.push(toPosition(current));
 		current = next;
 	}
 
 	return path.reverse();
-};
+}

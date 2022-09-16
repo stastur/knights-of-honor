@@ -1,8 +1,8 @@
 import { Position, Movement, Appearance } from "./components";
-import { Game } from "./game";
-import { coordinatesToTilePosition, move } from "./utils";
 import { drawPath, findPath } from "./path-finding";
+import { positionToTile, move, tileToPosition } from "./utils";
 import { Entity } from "./types";
+import { Game } from "./game";
 
 const runningSprite = new Image();
 runningSprite.src = "images/run.png";
@@ -52,11 +52,13 @@ export class Unit implements Entity {
 
 	update(ctx: Game): void {
 		if (this.movingTo) {
+			const { size, tiles } = ctx.map;
+
 			const path = findPath(
-				coordinatesToTilePosition(this.position, ctx.map.size),
-				coordinatesToTilePosition(this.movingTo, ctx.map.size),
-				{ tiles: ctx.map.tiles, isWalkable: (t: number) => t >= 0.5 }
-			).map(({ x, y }) => ({ x: x * ctx.map.size, y: y * ctx.map.size }));
+				positionToTile(this.position, size),
+				positionToTile(this.movingTo, size),
+				{ tiles, isWalkable: (t: number) => t >= 0.5 }
+			).map((t) => tileToPosition(t, size));
 
 			if (!path.length) {
 				move(this, this.position);
@@ -101,7 +103,6 @@ export class Unit implements Entity {
 			78
 		);
 
-		/** @todo flip */
 		// 	const flip = Math.abs(angle) > 0.5 * Math.PI ? -1 : 1;
 		// 	this.box.style.transform = `translate(-50%, -50%) scaleX(${flip})`;
 		// }
