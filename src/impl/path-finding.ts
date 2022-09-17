@@ -1,5 +1,5 @@
 import { Position } from "./components";
-import { PriorityQueue } from "./utils";
+import { add, PriorityQueue } from "./utils";
 
 export function drawPath(
 	ctx: CanvasRenderingContext2D,
@@ -30,10 +30,6 @@ function toPosition(key: PositionKey) {
 	const [xString, yString] = key.split("x");
 
 	return { x: Number(xString), y: Number(yString) };
-}
-
-function add(a: Position, b: Position) {
-	return { x: a.x + b.x, y: a.y + b.y };
 }
 
 function manhattanDistance(a: Position, b: Position) {

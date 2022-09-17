@@ -25,6 +25,7 @@ export class Unit implements Entity {
 	box = document.createElement("div");
 
 	movingTo: Position | null = null;
+	path: Position[] | null = null;
 
 	constructor(public name: string) {
 		this.box = document.createElement("div");
@@ -45,6 +46,7 @@ export class Unit implements Entity {
 			event.preventDefault();
 
 			if (this.focused) {
+				this.path = null;
 				this.movingTo = { x: event.clientX, y: event.clientY };
 			}
 		});
@@ -54,20 +56,25 @@ export class Unit implements Entity {
 		if (this.movingTo) {
 			const { size, tiles } = ctx.map;
 
-			const path = findPath(
-				positionToTile(this.position, size),
-				positionToTile(this.movingTo, size),
-				{ tiles, isWalkable: (t: number) => t >= 0.5 }
-			).map((t) => tileToPosition(t, size));
+			if (!this.path) {
+				this.path = findPath(
+					positionToTile(this.position, size),
+					positionToTile(this.movingTo, size),
+					{ tiles, isWalkable: (t: number) => t >= 0.5 }
+				).map((t) => tileToPosition(t, size));
+			}
 
-			if (!path.length) {
+			if (!this.path.length) {
 				move(this, this.position);
 				this.movingTo = null;
+				this.path = null;
 				return;
 			}
 
-			drawPath(ctx.context, path);
-			move(this, path[0], ctx.frameInfo.elapsed);
+			drawPath(ctx.context, this.path);
+
+			const isPointReached = move(this, this.path[0], ctx.frameInfo.elapsed);
+			isPointReached && this.path.shift();
 		}
 
 		this.render(ctx);

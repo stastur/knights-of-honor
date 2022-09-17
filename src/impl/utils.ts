@@ -15,11 +15,20 @@ export function distance(from: Position, to: Position): number {
 	return Math.sqrt((to.x - from.x) ** 2 + (to.y - from.y) ** 2);
 }
 
+export function isInBounds(
+	pos: Position,
+	bounds: [lt: Position, rb: Position]
+): boolean {
+	const [lt, rb] = bounds;
+
+	return pos.x > lt.x && pos.x < rb.x && pos.y > lt.y && pos.y < rb.y;
+}
+
 export function move(
 	object: { position: Position; movement: Movement },
 	to: Position,
 	elapsed = 1000
-): void {
+): boolean {
 	const { position, movement } = object;
 	const t = elapsed / 1000;
 	const d = movement.speed * t;
@@ -30,7 +39,7 @@ export function move(
 		reposition(object, to);
 		movement.state = "idle";
 
-		return;
+		return true;
 	}
 
 	movement.angle = angle(position, to);
@@ -39,7 +48,7 @@ export function move(
 	position.x += Math.cos(movement.angle) * d;
 	position.y += Math.sin(movement.angle) * d;
 
-	return;
+	return false;
 }
 
 export function createCanvas(width: number, height: number): HTMLCanvasElement {
@@ -163,4 +172,8 @@ export class PriorityQueue<T> {
 	get length(): number {
 		return this.data.length;
 	}
+}
+
+export function add(a: Position, b: Position): Position {
+	return { x: a.x + b.x, y: a.y + b.y };
 }
