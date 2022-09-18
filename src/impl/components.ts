@@ -9,11 +9,4 @@ interface Movement {
 	state: "idle" | "moving";
 }
 
-interface Appearance {
-	width: number;
-	height: number;
-	offset: number;
-	sprite: HTMLImageElement;
-}
-
-export type { Position, Movement, Appearance };
+export type { Position, Movement };

@@ -9,7 +9,7 @@ const FRAME_INTERVAL = ONE_SECOND / TARGET_FPS;
 interface FrameInfo {
 	stopFrame?: number;
 	elapsed: number;
-	currentFrame: number;
+	framesElapsed: number;
 	fps: number;
 }
 
@@ -19,7 +19,7 @@ export class Game {
 
 	frameInfo: FrameInfo = {
 		elapsed: 0,
-		currentFrame: 0,
+		framesElapsed: 0,
 		fps: 0,
 	};
 
@@ -60,11 +60,11 @@ export class Game {
 				// count FPS
 				{
 					frames++;
-					this.frameInfo.currentFrame++;
+					this.frameInfo.framesElapsed++;
 
 					if (now - lastMeasurement >= 1000) {
 						this.frameInfo.fps = frames;
-						this.frameInfo.currentFrame = 0;
+						this.frameInfo.framesElapsed = 0;
 						frames = 0;
 						lastMeasurement = now;
 					}

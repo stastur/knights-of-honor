@@ -1,39 +1,27 @@
-import { Position, Movement, Appearance } from "./components";
+import { Position, Movement } from "./components";
 import { drawPath, findPath } from "./path-finding";
-import { positionToTile, move, tileToPosition } from "./utils";
+import { positionToTile, move, tileToPosition, setStyles } from "./utils";
 import { Entity } from "./types";
 import { Game } from "./game";
-
-const runningSprite = new Image();
-runningSprite.src = "images/run.png";
-
-const idleSprite = new Image();
-idleSprite.src = "images/idle.png";
+import { Sprite } from "./sprite";
 
 export class Unit implements Entity {
-	position: Position = { x: 50, y: 100 };
+	position: Position = { x: 0, y: 0 };
 	movement: Movement = { speed: 50, state: "idle", angle: 0 };
-	appearance: Appearance = {
-		sprite: idleSprite,
-		height: 78,
-		width: 58,
-		offset: 0,
-	};
 
 	focused = false;
 
 	box = document.createElement("div");
 
-	movingTo: Position | null = null;
+	target: Position | null = null;
 	path: Position[] | null = null;
 
-	constructor(public name: string) {
-		this.box = document.createElement("div");
-
-		Object.assign(this.box.style, {
-			width: "58px",
-			height: "78px",
+	constructor(public name: string, public sprite: Sprite<Movement["state"]>) {
+		setStyles(this.box, {
+			width: "50px",
+			height: "50px",
 			position: "absolute",
+			transform: "translate(-50%, -50%)",
 		});
 
 		document.body.append(this.box);
@@ -47,26 +35,26 @@ export class Unit implements Entity {
 
 			if (this.focused) {
 				this.path = null;
-				this.movingTo = { x: event.clientX, y: event.clientY };
+				this.target = { x: event.clientX, y: event.clientY };
 			}
 		});
 	}
 
 	update(ctx: Game): void {
-		if (this.movingTo) {
+		if (this.target) {
 			const { size, tiles } = ctx.map;
 
 			if (!this.path) {
 				this.path = findPath(
 					positionToTile(this.position, size),
-					positionToTile(this.movingTo, size),
+					positionToTile(this.target, size),
 					{ tiles, isWalkable: (t: number) => t >= 0.5 }
 				).map((t) => tileToPosition(t, size));
 			}
 
 			if (!this.path.length) {
 				move(this, this.position);
-				this.movingTo = null;
+				this.target = null;
 				this.path = null;
 				return;
 			}
@@ -81,37 +69,16 @@ export class Unit implements Entity {
 	}
 
 	render({ context: ctx, frameInfo }: Game): void {
-		this.box.style.transform = `translate(${this.position.x - 0.5 * 58}px, ${
-			this.position.y - 0.5 * 78
-		}px)`;
+		setStyles(this.box, {
+			left: this.position.x + "px",
+			top: this.position.y + "px",
+		});
 
-		if (this.movement.state === "moving") {
-			this.appearance.sprite = runningSprite;
-		}
-
-		if (this.movement.state === "idle") {
-			this.appearance.sprite = idleSprite;
-		}
-
-		if (frameInfo.currentFrame % 5 === 0) {
-			this.appearance.offset =
-				(this.appearance.offset + 78) % (this.appearance.sprite.width || 78);
-		}
-
-		ctx.drawImage(
-			this.appearance.sprite,
-			this.appearance.offset,
-			0,
-			58,
-			78,
-			this.position.x - 0.5 * 58,
-			this.position.y - 0.5 * 78,
-			58,
-			78
-		);
-
-		// 	const flip = Math.abs(angle) > 0.5 * Math.PI ? -1 : 1;
-		// 	this.box.style.transform = `translate(-50%, -50%) scaleX(${flip})`;
-		// }
+		this.sprite.draw(ctx, {
+			state: this.movement.state,
+			position: this.position,
+			framesElapsed: frameInfo.framesElapsed,
+			flip: Math.abs(this.movement.angle) > 0.5 * Math.PI,
+		});
 	}
 }
