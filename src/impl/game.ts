@@ -8,7 +8,7 @@ const FRAME_INTERVAL = ONE_SECOND / TARGET_FPS;
 
 interface FrameInfo {
 	stopFrame?: number;
-	elapsed: number;
+	timeElapsed: number;
 	framesElapsed: number;
 	fps: number;
 }
@@ -18,7 +18,7 @@ export class Game {
 	map = new Map();
 
 	frameInfo: FrameInfo = {
-		elapsed: 0,
+		timeElapsed: 0,
 		framesElapsed: 0,
 		fps: 0,
 	};
@@ -43,6 +43,7 @@ export class Game {
 
 	start = (): void => {
 		this.isRunning = true;
+		this.entities.forEach((e) => e.init?.(this));
 
 		let then = performance.now();
 		let lastMeasurement = then;
@@ -55,7 +56,7 @@ export class Game {
 
 			if (elapsed >= FRAME_INTERVAL) {
 				then = now - (elapsed % FRAME_INTERVAL);
-				this.frameInfo.elapsed = elapsed;
+				this.frameInfo.timeElapsed = elapsed;
 
 				// count FPS
 				{

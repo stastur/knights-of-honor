@@ -1,4 +1,5 @@
-import { Position, Movement } from "./components";
+import { Position, Movement, Components } from "./components";
+import { Entity } from "./types";
 
 export function angle(from: Position, to: Position): number {
 	return Math.atan2(to.y - from.y, to.x - from.x);
@@ -12,7 +13,7 @@ export function reposition(
 }
 
 export function distance(from: Position, to: Position): number {
-	return Math.sqrt((to.x - from.x) ** 2 + (to.y - from.y) ** 2);
+	return Math.hypot(to.x - from.x, to.y - from.y);
 }
 
 export function isInBounds(
@@ -27,10 +28,10 @@ export function isInBounds(
 export function move(
 	object: { position: Position; movement: Movement },
 	to: Position,
-	elapsed = 1000
+	timeElapsed = 1000
 ): boolean {
 	const { position, movement } = object;
-	const t = elapsed / 1000;
+	const t = timeElapsed / 1000;
 	const d = movement.speed * t;
 
 	const isNearby = distance(position, to) <= d;
@@ -49,6 +50,25 @@ export function move(
 	position.y += Math.sin(movement.angle) * d;
 
 	return false;
+}
+
+export function attack(
+	object: Pick<Components, "health" | "damage" | "movement">,
+	target: Pick<Components, "health" | "movement">
+): void {
+	target.movement.path === null;
+	target.movement.target === null;
+	target.movement.state === "idle";
+
+	target.health.percentage = Math.max(
+		target.health.percentage - object.damage.attack,
+		0
+	);
+
+	if (target.health.percentage === 0) {
+		target.movement.state = "dead";
+		target.health.regenerationRate = 0;
+	}
 }
 
 export function createCanvas(width: number, height: number): HTMLCanvasElement {
@@ -176,4 +196,18 @@ export class PriorityQueue<T> {
 
 export function add(a: Position, b: Position): Position {
 	return { x: a.x + b.x, y: a.y + b.y };
+}
+
+export function hasComponents<C extends keyof Components>(
+	entity: Entity,
+	components: C[]
+): entity is Entity & Pick<Components, C> {
+	return components.every((c) => Reflect.has(entity, c));
+}
+
+export function getComponent<C extends keyof Components>(
+	entity: Entity,
+	component: C
+): Pick<Components, C>[C] | undefined {
+	return Reflect.get(entity, component);
 }

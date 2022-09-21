@@ -7,6 +7,7 @@ interface SpriteOptions {
 	frames: number;
 	framesHold?: number;
 	scale?: number;
+	finite?: boolean;
 }
 
 export class Sprite<T extends string> {
@@ -27,6 +28,7 @@ export class Sprite<T extends string> {
 				framesHold: options.frames,
 				frame: 0,
 				scale: 1,
+				finite: false,
 				image,
 				...options,
 			};
@@ -45,7 +47,13 @@ export class Sprite<T extends string> {
 		const sprite = this.states[props.state];
 
 		if (props.framesElapsed % sprite.framesHold === 0) {
-			sprite.frame = (sprite.frame + 1) % sprite.frames;
+			let nextFrame = (sprite.frame + 1) % sprite.frames;
+
+			if (sprite.finite && sprite.frame === sprite.frames - 1) {
+				nextFrame = sprite.frame;
+			}
+
+			sprite.frame = nextFrame;
 		}
 
 		const width = sprite.image.width / sprite.frames;
