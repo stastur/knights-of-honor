@@ -1,10 +1,25 @@
+import { controls } from "./controls";
 import { FpsInfo } from "./fps-info";
 import { Unit } from "./unit";
 import { Game } from "./game";
 import { GamePanel } from "./game-panel";
 import { Sprite } from "./sprite";
+import { Town } from "./town";
+import { Map } from "./map";
+import { Camera } from "./camera";
+import { MiniMap } from "./mini-map";
 
-const game = new Game();
+const camera = new Camera(document.body);
+const map = new Map();
+await map.load();
+
+const game = new Game(map, camera);
+
+game.entities.add(camera);
+game.entities.add(map);
+game.entities.add(new MiniMap());
+game.entities.add(new FpsInfo());
+game.entities.add(new GamePanel());
 
 const human = new Unit(
 	"human",
@@ -58,8 +73,8 @@ pig.position = { x: 200, y: 100 };
 
 game.entities.add(human);
 game.entities.add(pig);
+game.entities.add(new Town());
 
-game.entities.add(new FpsInfo());
-game.entities.add(new GamePanel());
+controls.init();
 
 game.start();

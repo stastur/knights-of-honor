@@ -1,5 +1,6 @@
-import { Position } from "./components";
 import { add, PriorityQueue } from "./utils";
+import { Position } from "./components";
+import { TileMap } from "./types";
 
 export function drawPath(
 	ctx: CanvasRenderingContext2D,
@@ -36,11 +37,6 @@ function manhattanDistance(a: Position, b: Position) {
 	return Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
 }
 
-interface TileMap {
-	tiles: number[][];
-	isWalkable: (tile: number) => boolean;
-}
-
 const directions: Position[] = [
 	// orthogonal
 	{ x: 0, y: 1 },
@@ -57,11 +53,9 @@ const directions: Position[] = [
 function neighbors(tileMap: TileMap, tilePos: Position): Position[] {
 	return directions
 		.map((direction) => add(tilePos, direction))
-		.filter((p) => {
-			const tile = tileMap.tiles[p.y]?.[p.x];
-
-			return tile !== undefined && tileMap.isWalkable(tile);
-		});
+		.filter(
+			({ x, y }) => (tileMap.tiles[y]?.[x] != null) === tileMap.isWalkable(y, x)
+		);
 }
 
 export function findPath(

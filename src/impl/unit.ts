@@ -1,21 +1,29 @@
+import { isEqual } from "@app/utils";
+
+import { controls } from "./controls";
 import { Position, Movement, Health, Damage } from "./components";
 import { drawPath, findPath } from "./path-finding";
 import {
 	positionToTile,
 	move,
 	tileToPosition,
-	setStyles,
-	hasComponents,
-	getComponent,
+	enterTown,
+	leaveTown,
+	isInBounds,
+	angle,
+	toMapPosition,
+	toCanvasPosition,
 } from "./utils";
 import { Entity } from "./types";
 import { Game } from "./game";
 import { Sprite } from "./sprite";
-import { Fight } from "./fight";
+import { Town } from "./town";
+import { Camera } from "./camera";
 
 export class Unit
 	implements Entity<"position" | "movement" | "health" | "damage">
 {
+	// components
 	position: Position = { x: 0, y: 0 };
 	movement: Movement = {
 		speed: 50,
@@ -25,87 +33,67 @@ export class Unit
 		path: null,
 	};
 	health: Health = { percentage: 100, regenerationRate: 1 };
-	damage: Damage = { attack: 10 };
+	damage: Damage = { attack: 1 };
 
+	// tags
 	focused = false;
+	dead = false;
 
-	box = document.createElement("div");
+	// data
+	town: Town | null = null;
 
-	constructor(public name: string, public sprite: Sprite<Movement["state"]>) {
-		setStyles(this.box, {
-			width: "50px",
-			height: "50px",
-			position: "absolute",
-			transform: "translate(-50%, -50%)",
-		});
-	}
+	constructor(public name: string, public sprite: Sprite<Movement["state"]>) {}
 
 	init(ctx: Game): void {
-		document.body.append(this.box);
+		controls.on("left-click", (pos) => {
+			const mapPosition = toMapPosition(ctx.camera, pos);
 
-		document.addEventListener("click", (event) => {
-			this.focused = this.box.contains(event.target as Node);
+			const clickedTile = positionToTile(mapPosition, ctx.map.size);
+			const unitTile = positionToTile(this.position, ctx.map.size);
+
+			this.focused = isEqual(clickedTile, unitTile);
 		});
 
-		document.addEventListener("contextmenu", (event) => {
-			event.preventDefault();
+		controls.on("right-click", (pos) => {
+			const mapPosition = toMapPosition(ctx.camera, pos);
 
 			if (this.focused) {
-				let target: Position | null = { x: event.clientX, y: event.clientY };
-
-				const targetedEntity = this.getEnemy(ctx, target);
-
-				if (targetedEntity) {
-					target = getComponent(targetedEntity, "position") || null;
-				}
-
-				this.movement.target = target;
+				this.movement.target = mapPosition;
+				leaveTown(this);
 			}
 		});
-	}
-
-	getEnemy(
-		ctx: Game,
-		target: Position
-	): Entity<"position" | "health" | "damage" | "movement"> | undefined {
-		const { size } = ctx.map;
-
-		const targetTile = positionToTile(target, size);
-
-		const targetedEntity = [...ctx.entities].find((e) => {
-			if (hasComponents(e, ["position", "health", "damage", "movement"])) {
-				const tile = positionToTile(e.position, size);
-				return e !== this && tile.x === targetTile.x && tile.y === targetTile.y;
-			}
-
-			return false;
-		});
-
-		return targetedEntity as
-			| Entity<"position" | "health" | "damage" | "movement">
-			| undefined;
 	}
 
 	update(ctx: Game): void {
 		const { movement, position } = this;
-		const { size, tiles } = ctx.map;
+		const { size } = ctx.map;
 
 		if (movement.target && this.movement.state !== "dead") {
 			const path = findPath(
 				positionToTile(position, size),
 				positionToTile(movement.target, size),
-				{ tiles, isWalkable: (t: number) => t >= 0.5 }
+				ctx.map
 			).map((t) => tileToPosition(t, size));
 
 			if (path?.length) {
-				drawPath(ctx.context, path);
-				move(this, path[0], ctx.frameInfo.timeElapsed);
+				drawPath(
+					ctx.context,
+					path.map((p) => toCanvasPosition(ctx.camera, p))
+				);
+				const nextPosition = move(this, path[0], ctx.frameInfo.timeElapsed);
+
+				movement.state = "moving";
+				movement.angle = angle(this.position, nextPosition);
+				this.position = nextPosition;
 			} else {
-				move(this, position);
-				const enemy = this.getEnemy(ctx, this.position);
+				for (const e of ctx.entities) {
+					if (e instanceof Town && isInBounds(this.position, e.boundary)) {
+						enterTown(this, e);
+						break;
+					}
+				}
 
-				enemy && ctx.entities.add(new Fight(this, enemy));
-
+				movement.state = "idle";
 				movement.target = null;
 			}
 		}
@@ -113,15 +101,18 @@ export class Unit
 		this.render(ctx);
 	}
 
-	drawHealth(ctx: CanvasRenderingContext2D): void {
+	drawHealth(ctx: CanvasRenderingContext2D, camera: Camera): void {
 		const { position, health } = this;
 
 		const barWidth = 50;
 		const barHeight = 8;
 
+		// TODO: Revisit canvas-map coordinates conversion, might be a more convenient way
+		const pos = toCanvasPosition(camera, position);
+
 		const barPosition = {
-			x: position.x - 0.5 * barWidth,
-			y: position.y - 30,
+			x: pos.x - 0.5 * barWidth,
+			y: pos.y - 30,
 		};
 
 		ctx.fillStyle = "green";
@@ -136,19 +127,18 @@ export class Unit
 		ctx.strokeRect(barPosition.x, barPosition.y, barWidth, barHeight);
 	}
 
-	render({ context: ctx, frameInfo }: Game): void {
-		setStyles(this.box, {
-			left: this.position.x + "px",
-			top: this.position.y + "px",
-		});
+	render({ context: ctx, frameInfo, camera }: Game): void {
+		if (this.town) {
+			return;
+		}
 
 		this.sprite.draw(ctx, {
 			state: this.movement.state,
-			position: this.position,
+			position: toCanvasPosition(camera, this.position),
 			framesElapsed: frameInfo.framesElapsed,
 			flip: Math.abs(this.movement.angle) > 0.5 * Math.PI,
 		});
 
-		this.drawHealth(ctx);
+		this.drawHealth(ctx, camera);
 	}
 }

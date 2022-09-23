@@ -12,13 +12,16 @@ export class FpsInfo implements Entity {
 			position: "absolute",
 			top: "0",
 			right: "0",
+			fontWeight: "bold",
+			padding: "5px",
+			backgroundColor: "white",
 		});
 
 		document.body.appendChild(this.box);
 	}
 
 	update({ frameInfo: { fps } }: Game): void {
-		let color = "black";
+		let color = "white";
 		if (fps > 55) {
 			color = "green";
 		} else if (fps > 30) {
@@ -31,25 +34,3 @@ export class FpsInfo implements Entity {
 		this.box.textContent = `FPS: ${fps}`;
 	}
 }
-
-// FpsInfo can be rendered on canvas:
-
-// update({ context: ctx, frameInfo: { fps } }: Game): void {
-// 	if (fps > 55) {
-// 		ctx.fillStyle = "green";
-// 	} else if (fps > 30) {
-// 		ctx.fillStyle = "orange";
-// 	} else {
-// 		ctx.fillStyle = "red";
-// 	}
-
-// 	const text = `FPS: ${fps}`;
-// 	const { width, actualBoundingBoxAscent } = ctx.measureText(text);
-
-// 	ctx.font = "1.5rem monospace";
-// 	ctx.fillText(
-// 		text,
-// 		ctx.canvas.width / devicePixelRatio - width,
-// 		actualBoundingBoxAscent
-// 	);
-// }

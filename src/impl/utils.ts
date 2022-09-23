@@ -1,5 +1,8 @@
 import { Position, Movement, Components } from "./components";
-import { Entity } from "./types";
+import { Boundary, Entity } from "./types";
+import { Camera } from "./camera";
+import { Town } from "./town";
+import { Unit } from "./unit";
 
 export function angle(from: Position, to: Position): number {
 	return Math.atan2(to.y - from.y, to.x - from.x);
@@ -16,20 +19,18 @@ export function distance(from: Position, to: Position): number {
 	return Math.hypot(to.x - from.x, to.y - from.y);
 }
 
-export function isInBounds(
-	pos: Position,
-	bounds: [lt: Position, rb: Position]
-): boolean {
-	const [lt, rb] = bounds;
+export function isInBounds(pos: Position, boundary: Boundary): boolean {
+	const lt = { x: boundary.x, y: boundary.y };
+	const rb = add(lt, { x: boundary.w, y: boundary.h });
 
-	return pos.x > lt.x && pos.x < rb.x && pos.y > lt.y && pos.y < rb.y;
+	return pos.x >= lt.x && pos.x <= rb.x && pos.y >= lt.y && pos.y <= rb.y;
 }
 
 export function move(
 	object: { position: Position; movement: Movement },
 	to: Position,
 	timeElapsed = 1000
-): boolean {
+): Position {
 	const { position, movement } = object;
 	const t = timeElapsed / 1000;
 	const d = movement.speed * t;
@@ -37,19 +38,20 @@ export function move(
 	const isNearby = distance(position, to) <= d;
 
 	if (isNearby) {
-		reposition(object, to);
-		movement.state = "idle";
-
-		return true;
+		return to;
 	}
 
-	movement.angle = angle(position, to);
-	movement.state = "moving";
+	const velocity: Position = {
+		x: (to.x - position.x) / distance(position, to),
+		y: (to.y - position.y) / distance(position, to),
+	};
 
-	position.x += Math.cos(movement.angle) * d;
-	position.y += Math.sin(movement.angle) * d;
+	const newPosition: Position = {
+		x: position.x + velocity.x * d,
+		y: position.y + velocity.y * d,
+	};
 
-	return false;
+	return newPosition;
 }
 
 export function attack(
@@ -86,6 +88,20 @@ export function createCanvas(width: number, height: number): HTMLCanvasElement {
 	ctx.scale(scale, scale);
 
 	return canvas;
+}
+
+export function toMapPosition(
+	camera: Camera,
+	onCanvasPosition: Position
+): Position {
+	return add(onCanvasPosition, camera.position);
+}
+
+export function toCanvasPosition(
+	camera: Camera,
+	onMapPosition: Position
+): Position {
+	return subtract(onMapPosition, camera.position);
 }
 
 export function positionToTile(p: Position, size: number): Position {
@@ -198,6 +214,10 @@ export function add(a: Position, b: Position): Position {
 	return { x: a.x + b.x, y: a.y + b.y };
 }
 
+export function subtract(a: Position, b: Position): Position {
+	return { x: a.x - b.x, y: a.y - b.y };
+}
+
 export function hasComponents<C extends keyof Components>(
 	entity: Entity,
 	components: C[]
@@ -210,4 +230,47 @@ export function getComponent<C extends keyof Components>(
 	component: C
 ): Pick<Components, C>[C] | undefined {
 	return Reflect.get(entity, component);
+}
+
+export function enterTown(unit: Unit, town: Town): void {
+	unit.town = town;
+
+	if (town.marshal) {
+		leaveTown(town.marshal);
+	}
+
+	town.marshal = unit;
+}
+
+export function leaveTown(unit: Unit): void {
+	if (unit.town) {
+		const { x, y, w, h } = unit.town.boundary;
+
+		unit.position = { x: x + 0.5 * w, y: y + h };
+		unit.town.marshal = null;
+	}
+
+	unit.town = null;
+}
+
+export function simplifyPath(path: Position[]): Position[] {
+	const simplified = [path[0]];
+
+	let prevPoint = simplified[0];
+	let prevAngle: number | undefined;
+
+	for (const point of path.slice(1)) {
+		const curAngle = angle(prevPoint, point);
+
+		if (curAngle === prevAngle) {
+			simplified.pop();
+		}
+
+		prevAngle = curAngle;
+		prevPoint = point;
+
+		simplified.push(point);
+	}
+
+	return simplified;
 }

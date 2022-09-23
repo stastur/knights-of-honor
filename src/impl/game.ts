@@ -1,6 +1,7 @@
-import { createCanvas } from "./utils";
-import { Entity } from "./types";
-import { Map } from "./map";
+import { createCanvas, setStyles } from "./utils";
+import { Entity, TileMap } from "./types";
+
+import { Camera } from "./camera";
 
 const TARGET_FPS = 60;
 const ONE_SECOND = 1000;
@@ -15,7 +16,6 @@ interface FrameInfo {
 
 export class Game {
 	entities = new Set<Entity>();
-	map = new Map();
 
 	frameInfo: FrameInfo = {
 		timeElapsed: 0,
@@ -24,25 +24,44 @@ export class Game {
 	};
 
 	isRunning = false;
+
+	backgroundCanvas: HTMLCanvasElement;
+	backgroundContext: CanvasRenderingContext2D;
+
+	mainCanvas: HTMLCanvasElement;
 	context: CanvasRenderingContext2D;
 
-	constructor() {
-		const canvas = createCanvas(
+	constructor(public map: TileMap, public camera: Camera) {
+		// TODO: Clean up this part
+		this.backgroundCanvas = createCanvas(
 			document.body.clientWidth,
 			document.body.clientHeight
 		);
 
-		this.context = canvas.getContext("2d")!;
-		this.context.lineJoin = "round";
+		this.mainCanvas = createCanvas(
+			document.body.clientWidth,
+			document.body.clientHeight
+		);
+
+		this.context = this.mainCanvas.getContext("2d")!;
 		this.context.font = "1.5rem monospace";
 
-		canvas.style.position = "absolute";
+		this.backgroundContext = this.backgroundCanvas.getContext("2d")!;
 
-		document.body.appendChild(canvas);
+		setStyles(this.mainCanvas, {
+			position: "absolute",
+		});
+
+		setStyles(this.backgroundCanvas, {
+			position: "absolute",
+		});
+
+		document.body.append(this.backgroundCanvas, this.mainCanvas);
 	}
 
 	start = (): void => {
 		this.isRunning = true;
+
 		this.entities.forEach((e) => e.init?.(this));
 
 		let then = performance.now();
@@ -83,14 +102,20 @@ export class Game {
 			return;
 		}
 
+		this.backgroundContext.clearRect(
+			0,
+			0,
+			this.backgroundContext.canvas.width,
+			this.backgroundContext.canvas.height
+		);
+
 		this.context.clearRect(
 			0,
 			0,
-			document.body.clientWidth,
-			document.body.clientHeight
+			this.context.canvas.width,
+			this.context.canvas.height
 		);
 
-		this.map.update(ctx);
 		this.entities.forEach((e) => {
 			e.update(ctx);
 		});

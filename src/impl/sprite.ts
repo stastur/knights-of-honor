@@ -1,6 +1,7 @@
 import { mapValues } from "@app/utils/mapValues";
 
 import { Position } from "./components";
+import { Boundary } from "./types";
 
 interface SpriteOptions {
 	src: string;
@@ -43,7 +44,7 @@ export class Sprite<T extends string> {
 			framesElapsed: number;
 			flip?: boolean;
 		}
-	): void {
+	): Boundary {
 		const sprite = this.states[props.state];
 
 		if (props.framesElapsed % sprite.framesHold === 0) {
@@ -62,6 +63,14 @@ export class Sprite<T extends string> {
 		const dw = width * sprite.scale;
 		const dh = height * sprite.scale;
 
+		const boundary: Boundary = {
+			// TODO: consider adding offset option, at the moment position is in the middle of a sprite
+			x: props.position.x - 0.5 * dw,
+			y: props.position.y - 0.5 * dh,
+			w: dw,
+			h: dh,
+		};
+
 		if (props.flip) {
 			ctx.save();
 			ctx.scale(-1, 1);
@@ -73,13 +82,14 @@ export class Sprite<T extends string> {
 			0,
 			width,
 			height,
-			// TODO: consider adding offset option, at the moment position is in the middle of a sprite
-			(props.flip ? -1 : 1) * props.position.x - 0.5 * dw,
-			props.position.y - 0.5 * dh,
-			dw,
-			dh
+			props.flip ? -boundary.x - dw : boundary.x,
+			boundary.y,
+			boundary.w,
+			boundary.h
 		);
 
 		props.flip && ctx.restore();
+
+		return boundary;
 	}
 }
