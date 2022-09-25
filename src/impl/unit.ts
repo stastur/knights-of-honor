@@ -1,8 +1,13 @@
 import { isEqual } from "@app/utils";
 
-import { controls } from "./controls";
+import { Camera } from "./camera";
 import { Position, Movement, Health, Damage } from "./components";
+import { controls } from "./controls";
+import { Game } from "./game";
 import { drawPath, findPath } from "./path-finding";
+import { Sprite } from "./sprite";
+import { Town } from "./town";
+import { Entity } from "./types";
 import {
 	positionToTile,
 	move,
@@ -14,11 +19,6 @@ import {
 	toMapPosition,
 	toCanvasPosition,
 } from "./utils";
-import { Entity } from "./types";
-import { Game } from "./game";
-import { Sprite } from "./sprite";
-import { Town } from "./town";
-import { Camera } from "./camera";
 
 export class Unit
 	implements Entity<"position" | "movement" | "health" | "damage">

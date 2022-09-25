@@ -1,6 +1,6 @@
-import { Boundary, Entity } from "./types";
 import { Position } from "./components";
 import { Game } from "./game";
+import { Boundary, Entity } from "./types";
 
 const SEGMENT_W = 3840;
 const SEGMENT_H = 3200;

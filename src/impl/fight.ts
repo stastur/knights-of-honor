@@ -1,7 +1,7 @@
-import { Entity } from "./types";
-import { Game } from "./game";
 import { Position } from "./components";
+import { Game } from "./game";
 import { Sprite } from "./sprite";
+import { Entity } from "./types";
 import { attack } from "./utils";
 
 export class Fight implements Entity<"position"> {

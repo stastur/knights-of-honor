@@ -1,7 +1,7 @@
-import { Position, Movement, Components } from "./components";
-import { Boundary, Entity } from "./types";
 import { Camera } from "./camera";
+import { Position, Movement, Components } from "./components";
 import { Town } from "./town";
+import { Boundary, Entity } from "./types";
 import { Unit } from "./unit";
 
 export function angle(from: Position, to: Position): number {

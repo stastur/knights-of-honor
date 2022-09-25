@@ -1,13 +1,13 @@
+import { Camera } from "./camera";
 import { controls } from "./controls";
 import { FpsInfo } from "./fps-info";
-import { Unit } from "./unit";
 import { Game } from "./game";
 import { GamePanel } from "./game-panel";
+import { Map } from "./map";
+import { MiniMap } from "./mini-map";
 import { Sprite } from "./sprite";
 import { Town } from "./town";
-import { Map } from "./map";
-import { Camera } from "./camera";
-import { MiniMap } from "./mini-map";
+import { Unit } from "./unit";
 
 const camera = new Camera(document.body);
 const map = new Map();

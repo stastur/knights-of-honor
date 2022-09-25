@@ -1,6 +1,6 @@
-import { add, PriorityQueue } from "./utils";
 import { Position } from "./components";
 import { TileMap } from "./types";
+import { add, PriorityQueue } from "./utils";
 
 export function drawPath(
 	ctx: CanvasRenderingContext2D,

@@ -1,7 +1,7 @@
-import { createCanvas, setStyles } from "./utils";
-import { Entity, TileMap } from "./types";
-
 import { Camera } from "./camera";
+import { Entity, TileMap } from "./types";
+import { createCanvas, setStyles } from "./utils";
+
 
 const TARGET_FPS = 60;
 const ONE_SECOND = 1000;

@@ -1,6 +1,6 @@
-import { setStyles } from "./utils";
-import { Entity } from "./types";
 import { Game } from "./game";
+import { Entity } from "./types";
+import { setStyles } from "./utils";
 
 export class GamePanel implements Entity {
 	box = document.createElement("div");

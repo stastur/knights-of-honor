@@ -1,5 +1,5 @@
-import { Entity } from "./types";
 import { Game } from "./game";
+import { Entity } from "./types";
 import { add } from "./utils";
 
 export class Camera implements Entity<"position"> {
