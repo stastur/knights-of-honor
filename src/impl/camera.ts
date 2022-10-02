@@ -1,6 +1,7 @@
+import { add } from "@app/utils/geometry";
+
 import { Game } from "./game";
 import { Entity, Size } from "./types";
-import { add } from "./utils";
 
 export class Camera implements Entity<"position"> {
 	position = { x: 0, y: 0 };

@@ -40,3 +40,28 @@ export const isEqual = (one: unknown, other: unknown): boolean => {
 
 	return one === other;
 };
+
+export const has =
+	(entry: Record<string, unknown>) =>
+	(obj: Record<string, unknown>): boolean => {
+		for (const key in entry) {
+			if (!obj.hasOwnProperty(key)) {
+				return false;
+			}
+
+			if (!isEqual(obj[key], entry[key])) {
+				return false;
+			}
+		}
+
+		return true;
+	};
+
+export function mapValues<K extends string, V, NewValue>(
+	object: Record<K, V>,
+	cb: (v: V) => NewValue
+): Record<K, NewValue> {
+	return Object.fromEntries(
+		Object.entries<V>(object).map(([k, v]) => [k, cb(v)])
+	) as Record<K, NewValue>;
+}

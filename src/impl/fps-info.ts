@@ -1,6 +1,7 @@
+import { setStyles } from "@app/utils/html";
+
 import { Game } from "./game";
 import { Entity } from "./types";
-import { setStyles } from "./utils";
 
 export class FpsInfo implements Entity {
 	box: HTMLElement;

@@ -1,7 +1,9 @@
+import { Boundary } from "@app/utils/geometry";
+
 import { Position } from "./components";
 import { Game } from "./game";
 import { Sprite } from "./sprite";
-import { Boundary, Entity } from "./types";
+import { Entity } from "./types";
 import { Unit } from "./unit";
 import { toCanvasPosition } from "./utils";
 

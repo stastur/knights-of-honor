@@ -1,25 +1,8 @@
+import { add } from "@app/utils/geometry";
+import { PriorityQueue } from "@app/utils/structures";
+
 import { Position } from "./components";
 import { TileMap } from "./types";
-import { add, PriorityQueue } from "./utils";
-
-export function drawPath(
-	ctx: CanvasRenderingContext2D,
-	path: Position[]
-): void {
-	const goal = path.at(-1);
-
-	ctx.fillStyle = ctx.strokeStyle = "red";
-
-	ctx.beginPath();
-	path.forEach(({ x, y }) => {
-		ctx.lineTo(x, y);
-	});
-	ctx.stroke();
-
-	ctx.beginPath();
-	goal && ctx.arc(goal.x, goal.y, 10, 0, Math.PI * 2);
-	ctx.fill();
-}
 
 type PositionKey = `${number}x${number}`;
 

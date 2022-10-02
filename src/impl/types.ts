@@ -7,13 +7,6 @@ export type Entity<C extends keyof Components = never> = Pick<Components, C> &
 		update(ctx: Game): void;
 	};
 
-export interface Boundary {
-	x: number;
-	y: number;
-	w: number;
-	h: number;
-}
-
 export interface TileMap {
 	size: number;
 	rows: number;

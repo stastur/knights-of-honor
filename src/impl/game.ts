@@ -1,6 +1,8 @@
+import { createCanvas, clearCanvas } from "@app/utils/canvas";
+import { setStyles } from "@app/utils/html";
+
 import { Camera } from "./camera";
 import { Entity, TileMap } from "./types";
-import { clearCanvas, createCanvas, setStyles } from "./utils";
 
 const TARGET_FPS = 60;
 const ONE_SECOND = 1000;

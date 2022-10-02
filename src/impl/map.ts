@@ -1,6 +1,7 @@
-import { Position } from "./components";
+import { Boundary, Point } from "@app/utils/geometry";
+
 import { Game } from "./game";
-import { Boundary, Entity, TileMap } from "./types";
+import { Entity, TileMap } from "./types";
 
 const SEGMENT_W = 3840;
 const SEGMENT_H = 3200;
@@ -86,12 +87,12 @@ export class Map implements Entity, TileMap {
 		}
 
 		const viewportFragments: Boundary[] = visibleSegments.map((segment) => {
-			const lt: Position = {
+			const lt: Point = {
 				x: Math.max(segment.x, cameraBounds.x),
 				y: Math.max(segment.y, cameraBounds.y),
 			};
 
-			const rb: Position = {
+			const rb: Point = {
 				x: Math.min(segment.x + SEGMENT_W, cameraBounds.x + cameraBounds.w),
 				y: Math.min(segment.y + SEGMENT_H, cameraBounds.y + cameraBounds.h),
 			};

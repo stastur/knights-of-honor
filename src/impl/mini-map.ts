@@ -1,6 +1,7 @@
+import { setStyles } from "@app/utils/html";
+
 import { Game } from "./game";
 import { Entity } from "./types";
-import { setStyles } from "./utils";
 
 export class MiniMap implements Entity {
 	box = document.createElement("div");

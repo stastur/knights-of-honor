@@ -1,10 +1,12 @@
-import { isEqual } from "@app/utils";
+import { drawPolyline } from "@app/utils/canvas";
+import { angle, isInBounds } from "@app/utils/geometry";
+import { isEqual } from "@app/utils/objects";
 
 import { Camera } from "./camera";
 import { Position, Movement, Health, Damage } from "./components";
 import { controls } from "./controls";
 import { Game } from "./game";
-import { drawPath, findPath } from "./path-finding";
+import { findPath } from "./path-finding";
 import { Sprite } from "./sprite";
 import { Town } from "./town";
 import { Entity } from "./types";
@@ -14,8 +16,6 @@ import {
 	tileToPosition,
 	enterTown,
 	leaveTown,
-	isInBounds,
-	angle,
 	toMapPosition,
 	toCanvasPosition,
 } from "./utils";
@@ -77,7 +77,7 @@ export class Unit
 			).map((t) => tileToPosition(t, size));
 
 			if (path?.length) {
-				drawPath(
+				drawPolyline(
 					ctx.context,
 					path.map((p) => toCanvasPosition(ctx.camera, p))
 				);

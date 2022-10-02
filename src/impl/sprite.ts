@@ -1,7 +1,7 @@
-import { mapValues } from "@app/utils/mapValues";
+import { Boundary } from "@app/utils/geometry";
+import { mapValues } from "@app/utils/objects";
 
 import { Position } from "./components";
-import { Boundary } from "./types";
 
 interface SpriteOptions {
 	src: string;
