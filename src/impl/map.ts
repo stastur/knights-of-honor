@@ -1,6 +1,6 @@
 import { Position } from "./components";
 import { Game } from "./game";
-import { Boundary, Entity } from "./types";
+import { Boundary, Entity, TileMap } from "./types";
 
 const SEGMENT_W = 3840;
 const SEGMENT_H = 3200;
@@ -18,10 +18,13 @@ interface Segment {
 	y: number;
 }
 
-export class Map implements Entity {
+export class Map implements Entity, TileMap {
 	size = 32;
 	rows = 1000;
 	cols = 1200;
+
+	width = this.cols * this.size;
+	height = this.rows * this.size;
 
 	segments: Segment[] = [];
 	tiles: number[][] = [];

@@ -28,3 +28,7 @@ interface Components {
 }
 
 export type { Position, Movement, Health, Damage, Components };
+
+export type Tag = "enemy" | "ally" | "player" | "focusable" | "focused";
+
+export type Tags = Partial<Record<Tag, boolean>>;

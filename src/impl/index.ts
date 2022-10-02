@@ -1,5 +1,6 @@
 import { Camera } from "./camera";
 import { controls } from "./controls";
+import { FocusPanel } from "./focus-panel";
 import { FpsInfo } from "./fps-info";
 import { Game } from "./game";
 import { GamePanel } from "./game-panel";
@@ -9,7 +10,12 @@ import { Sprite } from "./sprite";
 import { Town } from "./town";
 import { Unit } from "./unit";
 
-const camera = new Camera(document.body);
+const body = document.body;
+
+const camera = new Camera({
+	w: body.clientWidth,
+	h: body.clientHeight,
+});
 const map = new Map();
 await map.load();
 
@@ -20,6 +26,7 @@ game.entities.add(map);
 game.entities.add(new MiniMap());
 game.entities.add(new FpsInfo());
 game.entities.add(new GamePanel());
+game.entities.add(new FocusPanel());
 
 const human = new Unit(
 	"human",

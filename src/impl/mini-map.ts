@@ -8,26 +8,28 @@ export class MiniMap implements Entity {
 
 	init(ctx: Game): void {
 		const width = 300;
+		const {
+			map,
+			camera: { viewport },
+		} = ctx;
 
 		setStyles(this.box, {
 			position: "absolute",
-			backgroundColor: "black",
+			backgroundColor: "#12b886",
 			bottom: "0",
 			right: "0",
 			width: width + "px",
-			aspectRatio: (ctx.map.cols / ctx.map.rows).toString(),
+			aspectRatio: (map.cols / map.rows).toString(),
 		});
 
-		const viewportToMapWRatio =
-			ctx.backgroundCanvas.clientWidth / (ctx.map.cols * ctx.map.size);
-		const viewportToMapHRatio =
-			ctx.backgroundCanvas.clientHeight / (ctx.map.cols * ctx.map.size);
+		const wRatio = viewport.w / map.width;
+		const hRatio = viewport.h / map.height;
 
 		setStyles(this.frame, {
 			position: "absolute",
 			border: "1px solid white",
-			aspectRatio: (viewportToMapWRatio / viewportToMapHRatio).toString(),
-			width: viewportToMapWRatio * width + "px",
+			aspectRatio: (wRatio / hRatio).toString(),
+			width: wRatio * width + "px",
 		});
 
 		this.box.append(this.frame);
@@ -54,17 +56,15 @@ export class MiniMap implements Entity {
 		this.frame.addEventListener("mousemove", (ev) => {
 			if (shouldMoveCamera) {
 				ctx.camera.position.x +=
-					(ev.movementX / this.box.clientWidth) * ctx.map.cols * ctx.map.size;
+					(ev.movementX / this.box.clientWidth) * map.width;
 				ctx.camera.position.y +=
-					(ev.movementY / this.box.clientHeight) * ctx.map.rows * ctx.map.size;
+					(ev.movementY / this.box.clientHeight) * map.height;
 			}
 		});
 
 		this.box.addEventListener("click", (ev) => {
-			ctx.camera.position.x =
-				(ev.offsetX / this.box.clientWidth) * ctx.map.cols * ctx.map.size;
-			ctx.camera.position.y =
-				(ev.offsetY / this.box.clientHeight) * ctx.map.rows * ctx.map.size;
+			ctx.camera.position.x = (ev.offsetX / this.box.clientWidth) * map.width;
+			ctx.camera.position.y = (ev.offsetY / this.box.clientHeight) * map.height;
 		});
 	}
 
@@ -72,10 +72,8 @@ export class MiniMap implements Entity {
 		const { map, camera } = ctx;
 
 		setStyles(this.frame, {
-			left:
-				Math.min((100 * camera.position.x) / (map.cols * map.size), 100) + "%",
-			top:
-				Math.min((100 * camera.position.y) / (map.rows * map.size), 100) + "%",
+			left: Math.min(100 * (camera.position.x / map.width), 100) + "%",
+			top: Math.min(100 * (camera.position.y / map.height), 100) + "%",
 		});
 	}
 }

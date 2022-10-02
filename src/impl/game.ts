@@ -1,7 +1,6 @@
 import { Camera } from "./camera";
 import { Entity, TileMap } from "./types";
-import { createCanvas, setStyles } from "./utils";
-
+import { clearCanvas, createCanvas, setStyles } from "./utils";
 
 const TARGET_FPS = 60;
 const ONE_SECOND = 1000;
@@ -102,19 +101,8 @@ export class Game {
 			return;
 		}
 
-		this.backgroundContext.clearRect(
-			0,
-			0,
-			this.backgroundContext.canvas.width,
-			this.backgroundContext.canvas.height
-		);
-
-		this.context.clearRect(
-			0,
-			0,
-			this.context.canvas.width,
-			this.context.canvas.height
-		);
+		clearCanvas(this.backgroundContext);
+		clearCanvas(this.context);
 
 		this.entities.forEach((e) => {
 			e.update(ctx);

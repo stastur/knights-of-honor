@@ -38,5 +38,6 @@ h6 {
 /* End of reset */
 
 body {
+	overflow: hidden;
 	font-family: Courier, monospace;
 }

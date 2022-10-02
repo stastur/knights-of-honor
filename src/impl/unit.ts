@@ -36,6 +36,7 @@ export class Unit
 	damage: Damage = { attack: 1 };
 
 	// tags
+	focusable = true;
 	focused = false;
 	dead = false;
 
