@@ -8,7 +8,7 @@ import { Unit } from "./unit";
 import { toCanvasPosition } from "./utils";
 
 export class Town implements Entity<"position"> {
-	position: Position = { x: 400, y: 500 };
+	position: Position = { x: 2000, y: 2500 };
 
 	sprite = new Sprite({
 		default: {
@@ -16,7 +16,6 @@ export class Town implements Entity<"position"> {
 			frames: 1,
 		},
 	});
-	box = document.createElement("div");
 
 	// game data
 	marshal: Unit | null = null;

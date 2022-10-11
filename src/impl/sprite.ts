@@ -64,7 +64,7 @@ export class Sprite<T extends string> {
 		const dh = height * sprite.scale;
 
 		const boundary: Boundary = {
-			// TODO: consider adding offset option, at the moment position is in the middle of a sprite
+			// TODO: offset option, at the moment position is in the middle of a sprite
 			x: props.position.x - 0.5 * dw,
 			y: props.position.y - 0.5 * dh,
 			w: dw,

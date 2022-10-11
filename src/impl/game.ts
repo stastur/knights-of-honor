@@ -17,6 +17,7 @@ interface FrameInfo {
 
 export class Game {
 	entities = new Set<Entity>();
+	activeEntity: Entity | null = null;
 
 	frameInfo: FrameInfo = {
 		timeElapsed: 0,
@@ -33,7 +34,7 @@ export class Game {
 	context: CanvasRenderingContext2D;
 
 	constructor(public map: TileMap, public camera: Camera) {
-		// TODO: Clean up this part
+		// TODO: clean up this part
 		this.backgroundCanvas = createCanvas(
 			document.body.clientWidth,
 			document.body.clientHeight

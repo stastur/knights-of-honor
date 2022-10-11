@@ -1,6 +1,6 @@
 import { Camera } from "./camera";
+import { ControlPanel } from "./control-panel";
 import { controls } from "./controls";
-import { FocusPanel } from "./focus-panel";
 import { FpsInfo } from "./fps-info";
 import { Game } from "./game";
 import { GamePanel } from "./game-panel";
@@ -21,12 +21,13 @@ await map.load();
 
 const game = new Game(map, camera);
 
-game.entities.add(camera);
-game.entities.add(map);
-game.entities.add(new MiniMap());
-game.entities.add(new FpsInfo());
-game.entities.add(new GamePanel());
-game.entities.add(new FocusPanel());
+game.entities
+	.add(camera)
+	.add(map)
+	.add(new MiniMap(map.createMiniature(0.01)))
+	.add(new FpsInfo())
+	.add(new GamePanel())
+	.add(new ControlPanel());
 
 const human = new Unit(
 	"human",
@@ -49,7 +50,7 @@ const human = new Unit(
 		},
 	})
 );
-human.position = { x: 50, y: 100 };
+human.position = { x: 2000, y: 2000 };
 
 const pig = new Unit(
 	"pig",
@@ -75,13 +76,9 @@ const pig = new Unit(
 		},
 	})
 );
+pig.position = { x: 2000, y: 2100 };
 
-pig.position = { x: 200, y: 100 };
-
-game.entities.add(human);
-game.entities.add(pig);
-game.entities.add(new Town());
+game.entities.add(human).add(pig).add(new Town());
 
 controls.init();
-
 game.start();

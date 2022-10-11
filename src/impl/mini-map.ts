@@ -4,8 +4,10 @@ import { Game } from "./game";
 import { Entity } from "./types";
 
 export class MiniMap implements Entity {
-	box = document.createElement("div");
-	frame = document.createElement("div");
+	container = document.createElement("div");
+	activeArea = document.createElement("div");
+
+	constructor(public mapMiniature: string) {}
 
 	init(ctx: Game): void {
 		const width = 300;
@@ -14,9 +16,11 @@ export class MiniMap implements Entity {
 			camera: { viewport },
 		} = ctx;
 
-		setStyles(this.box, {
+		setStyles(this.container, {
 			position: "absolute",
-			backgroundColor: "#12b886",
+			backgroundImage: `url(${this.mapMiniature})`,
+			backgroundSize: "contain",
+			border: "1px solid white",
 			bottom: "0",
 			right: "0",
 			width: width + "px",
@@ -26,53 +30,55 @@ export class MiniMap implements Entity {
 		const wRatio = viewport.w / map.width;
 		const hRatio = viewport.h / map.height;
 
-		setStyles(this.frame, {
+		setStyles(this.activeArea, {
 			position: "absolute",
 			border: "1px solid white",
 			aspectRatio: (wRatio / hRatio).toString(),
 			width: wRatio * width + "px",
 		});
 
-		this.box.append(this.frame);
+		this.container.append(this.activeArea);
 
-		document.body.append(this.box);
+		document.body.append(this.container);
 
 		let shouldMoveCamera = false;
 
-		// TODO: Introduce some destroy method and remove listeners
-		this.frame.addEventListener("click", (ev) => ev.stopPropagation());
+		// TODO: remove listeners on destroy
+		this.activeArea.addEventListener("click", (ev) => ev.stopPropagation());
 
-		this.frame.addEventListener("mousedown", () => {
+		this.activeArea.addEventListener("mousedown", () => {
 			shouldMoveCamera = true;
 		});
 
-		this.frame.addEventListener("mouseup", () => {
+		this.activeArea.addEventListener("mouseup", () => {
 			shouldMoveCamera = false;
 		});
 
-		this.frame.addEventListener("mouseleave", () => {
+		this.activeArea.addEventListener("mouseleave", () => {
 			shouldMoveCamera = false;
 		});
 
-		this.frame.addEventListener("mousemove", (ev) => {
+		this.activeArea.addEventListener("mousemove", (ev) => {
 			if (shouldMoveCamera) {
 				ctx.camera.position.x +=
-					(ev.movementX / this.box.clientWidth) * map.width;
+					(ev.movementX / this.container.clientWidth) * map.width;
 				ctx.camera.position.y +=
-					(ev.movementY / this.box.clientHeight) * map.height;
+					(ev.movementY / this.container.clientHeight) * map.height;
 			}
 		});
 
-		this.box.addEventListener("click", (ev) => {
-			ctx.camera.position.x = (ev.offsetX / this.box.clientWidth) * map.width;
-			ctx.camera.position.y = (ev.offsetY / this.box.clientHeight) * map.height;
+		this.container.addEventListener("click", (ev) => {
+			ctx.camera.position.x =
+				(ev.offsetX / this.container.clientWidth) * map.width;
+			ctx.camera.position.y =
+				(ev.offsetY / this.container.clientHeight) * map.height;
 		});
 	}
 
 	update(ctx: Game): void {
 		const { map, camera } = ctx;
 
-		setStyles(this.frame, {
+		setStyles(this.activeArea, {
 			left: Math.min(100 * (camera.position.x / map.width), 100) + "%",
 			top: Math.min(100 * (camera.position.y / map.height), 100) + "%",
 		});
