@@ -1,11 +1,14 @@
 import { Boundary } from "@app/utils/geometry";
+import { isEqual } from "@app/utils/objects";
 
 import { Position } from "./components";
+import { controls } from "./controls";
 import { Game } from "./game";
+import { Province } from "./province";
 import { Sprite } from "./sprite";
 import { Entity } from "./types";
 import { Unit } from "./unit";
-import { toCanvasPosition } from "./utils";
+import { positionToTile, toCanvasPosition, toMapPosition } from "./utils";
 
 export class Town implements Entity<"position"> {
 	position: Position = { x: 2000, y: 2500 };
@@ -18,8 +21,22 @@ export class Town implements Entity<"position"> {
 	});
 
 	// game data
-	marshal: Unit | null = null;
+	marshal?: Unit;
+	province?: Province;
 	boundary: Boundary = { x: 0, y: 0, w: 0, h: 0 };
+
+	init(ctx: Game) {
+		controls.on("left-click", (pos) => {
+			const mapPosition = toMapPosition(ctx.camera, pos);
+
+			const clickedTile = positionToTile(mapPosition, ctx.map.size);
+			const unitTile = positionToTile(this.position, ctx.map.size);
+
+			if (isEqual(clickedTile, unitTile)) {
+				ctx.activeEntity = this;
+			}
+		});
+	}
 
 	update(ctx: Game): void {
 		this.render(ctx);
@@ -33,15 +50,5 @@ export class Town implements Entity<"position"> {
 			position,
 			framesElapsed,
 		});
-
-		if (this.marshal) {
-			const text = `${this.marshal.name} in town`;
-			ctx.fillStyle = "blue";
-			ctx.fillText(
-				text,
-				position.x - ctx.measureText(text).width * 0.5,
-				position.y - 45
-			);
-		}
 	}
 }

@@ -16,6 +16,6 @@ interface Components {
 
 export type { Position, Movement, Components };
 
-export type Tag = "playerControlled" | "focusable";
+export type Tag = "playerControlled" | "focusable" | "locked";
 
 export type Tags = Partial<Record<Tag, boolean>>;

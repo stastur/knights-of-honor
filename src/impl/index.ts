@@ -4,8 +4,10 @@ import { controls } from "./controls";
 import { FpsInfo } from "./fps-info";
 import { Game } from "./game";
 import { GamePanel } from "./game-panel";
+import { Kingdom } from "./kingdom";
 import { Map } from "./map";
 import { MiniMap } from "./mini-map";
+import { Province } from "./province";
 import { Sprite } from "./sprite";
 import { Town } from "./town";
 import { Unit } from "./unit";
@@ -78,7 +80,29 @@ const pig = new Unit(
 );
 pig.position = { x: 2000, y: 2100 };
 
-game.entities.add(human).add(pig).add(new Town());
+const humanKingdom = new Kingdom(true);
+
+humanKingdom.units.push(human);
+human.kingdom = humanKingdom;
+
+const pigKingdom = new Kingdom(false);
+pigKingdom.units.push(pig);
+pig.kingdom = pigKingdom;
+
+const humanProvince = new Province([]);
+const humanTown = new Town();
+
+humanTown.province = humanProvince;
+humanProvince.kingdom = humanKingdom;
+humanProvince.town = humanTown;
+humanKingdom.provinces.push(humanProvince);
+
+game.entities
+	.add(new Town())
+	.add(human)
+	.add(pig)
+	.add(pigKingdom)
+	.add(humanKingdom);
 
 controls.init();
 game.start();

@@ -2,9 +2,11 @@ import { drawPolyline } from "@app/utils/canvas";
 import { angle, isInBounds } from "@app/utils/geometry";
 import { isEqual } from "@app/utils/objects";
 
+import { Battle } from "./battle";
 import { Position, Movement } from "./components";
 import { controls } from "./controls";
 import { Game } from "./game";
+import { Kingdom } from "./kingdom";
 import { findPath } from "./path-finding";
 import { Sprite } from "./sprite";
 import { Town } from "./town";
@@ -28,11 +30,25 @@ export class Unit implements Entity<"position" | "movement"> {
 
 	// tags
 	focusable = true;
+	locked = false;
 
 	// data
-	town: Town | null = null;
+	town?: Town;
+	kingdom?: Kingdom;
 
-	currentJob: Generator | null = null;
+	baseStats = {
+		health: 100,
+		damage: 5,
+		defense: 1,
+	};
+
+	stats = {
+		health: this.baseStats.health,
+		damage: this.baseStats.damage,
+		defense: this.baseStats.defense,
+	};
+
+	currentJob?: Generator;
 
 	constructor(public name: string, public sprite: Sprite<Movement["state"]>) {}
 
@@ -51,7 +67,7 @@ export class Unit implements Entity<"position" | "movement"> {
 		controls.on("right-click", (pos) => {
 			const moveTo = toMapPosition(ctx.camera, pos);
 
-			if (ctx.activeEntity === this) {
+			if (ctx.activeEntity === this && this.kingdom?.playerControlled) {
 				const tile = positionToTile(moveTo, ctx.map.size);
 
 				if (ctx.map.isWalkable(tile.y, tile.x)) {
@@ -64,9 +80,10 @@ export class Unit implements Entity<"position" | "movement"> {
 
 						if (
 							e instanceof Unit &&
-							isEqual(tile, positionToTile(e.position, ctx.map.size))
+							isEqual(tile, positionToTile(e.position, ctx.map.size)) &&
+							!e.kingdom?.playerControlled
 						) {
-							this.currentJob = this.follow(ctx, e);
+							this.currentJob = this.attack(ctx, e);
 							return;
 						}
 					}
@@ -82,10 +99,10 @@ export class Unit implements Entity<"position" | "movement"> {
 			const { x, y } = this.town.position;
 
 			this.position = { x, y: y + 50 };
-			this.town.marshal = null;
+			this.town.marshal = undefined;
 		}
 
-		this.town = null;
+		this.town = undefined;
 	}
 
 	*enterTown(ctx: Game, town: Town) {
@@ -155,12 +172,20 @@ export class Unit implements Entity<"position" | "movement"> {
 		return true;
 	}
 
+	*attack(ctx: Game, unit: Unit) {
+		const isWithinReach = yield* this.follow(ctx, unit);
+
+		if (isWithinReach) {
+			ctx.entities.add(new Battle(this, unit));
+		}
+	}
+
 	update(ctx: Game): void {
-		if (this.currentJob) {
+		if (!this.locked && this.currentJob) {
 			const { done } = this.currentJob.next();
 
 			if (done) {
-				this.currentJob = null;
+				this.currentJob = undefined;
 			}
 		}
 
