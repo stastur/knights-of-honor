@@ -15,9 +15,15 @@ interface FrameInfo {
 	fps: number;
 }
 
+interface Hooks {
+	onStart: (ctx: Game) => void;
+	onUpdate: (ctx: Game) => void;
+	onStop: (ctx: Game) => void;
+}
+
 export class Game {
-	entities = new Set<Entity>();
-	activeEntity: Entity | null = null;
+	entities = new Map<number, Entity>();
+	activeEntityId?: number;
 
 	frameInfo: FrameInfo = {
 		timeElapsed: 0,
@@ -27,38 +33,41 @@ export class Game {
 
 	isRunning = false;
 
-	backgroundCanvas: HTMLCanvasElement;
-	backgroundContext: CanvasRenderingContext2D;
+	background: CanvasRenderingContext2D;
+	scene: CanvasRenderingContext2D;
 
-	mainCanvas: HTMLCanvasElement;
-	context: CanvasRenderingContext2D;
-
-	constructor(public map: TileMap, public camera: Camera) {
+	constructor(
+		public map: TileMap,
+		public camera: Camera,
+		public hooks: Partial<Hooks> = {}
+	) {
 		// TODO: clean up this part
-		this.backgroundCanvas = createCanvas(
+		const backgroundCanvas = createCanvas(
 			document.body.clientWidth,
 			document.body.clientHeight
 		);
 
-		this.mainCanvas = createCanvas(
+		const sceneCanvas = createCanvas(
 			document.body.clientWidth,
 			document.body.clientHeight
 		);
 
-		this.context = this.mainCanvas.getContext("2d")!;
-		this.context.font = "1.5rem monospace";
+		this.scene = sceneCanvas.getContext("2d")!;
+		this.scene.font = "1.5rem monospace";
 
-		this.backgroundContext = this.backgroundCanvas.getContext("2d")!;
+		this.background = backgroundCanvas.getContext("2d")!;
 
-		setStyles(this.mainCanvas, {
+		setStyles(sceneCanvas, {
 			position: "absolute",
+			zIndex: "-1",
 		});
 
-		setStyles(this.backgroundCanvas, {
+		setStyles(backgroundCanvas, {
 			position: "absolute",
+			zIndex: "-1",
 		});
 
-		document.body.append(this.backgroundCanvas, this.mainCanvas);
+		document.body.append(backgroundCanvas, sceneCanvas);
 	}
 
 	start = (): void => {
@@ -97,6 +106,7 @@ export class Game {
 		};
 
 		this.frameInfo.stopFrame = requestAnimationFrame(loop);
+		this.hooks.onStart?.(this);
 	};
 
 	update(ctx: Game): void {
@@ -104,12 +114,14 @@ export class Game {
 			return;
 		}
 
-		clearCanvas(this.backgroundContext);
-		clearCanvas(this.context);
+		clearCanvas(this.background);
+		clearCanvas(this.scene);
 
 		this.entities.forEach((e) => {
 			e.update(ctx);
 		});
+
+		this.hooks.onUpdate?.(this);
 	}
 
 	stop(): void {
@@ -121,5 +133,6 @@ export class Game {
 
 		cancelAnimationFrame(frame);
 		this.isRunning = false;
+		this.hooks.onStop?.(this);
 	}
 }

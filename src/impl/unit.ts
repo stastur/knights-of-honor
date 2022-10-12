@@ -1,11 +1,13 @@
 import { drawPolyline } from "@app/utils/canvas";
-import { angle, isInBounds } from "@app/utils/geometry";
+import { angle } from "@app/utils/geometry";
+import { setStyles } from "@app/utils/html";
 import { isEqual } from "@app/utils/objects";
 
 import { Battle } from "./battle";
 import { Position, Movement } from "./components";
 import { controls } from "./controls";
 import { Game } from "./game";
+import { newId } from "./ids";
 import { Kingdom } from "./kingdom";
 import { findPath } from "./path-finding";
 import { Sprite } from "./sprite";
@@ -17,9 +19,14 @@ import {
 	tileToPosition,
 	toMapPosition,
 	toCanvasPosition,
+	createOverlay,
+	getOverlayStyles,
 } from "./utils";
 
 export class Unit implements Entity<"position" | "movement"> {
+	id = newId();
+	overlay = createOverlay(this.id);
+
 	// components
 	position: Position = { x: 0, y: 0 };
 	movement: Movement = {
@@ -53,45 +60,37 @@ export class Unit implements Entity<"position" | "movement"> {
 	constructor(public name: string, public sprite: Sprite<Movement["state"]>) {}
 
 	init(ctx: Game): void {
-		controls.on("left-click", (pos) => {
-			const mapPosition = toMapPosition(ctx.camera, pos);
+		this.overlay.onclick = () => {
+			ctx.activeEntityId = this.id;
+		};
 
-			const clickedTile = positionToTile(mapPosition, ctx.map.size);
-			const unitTile = positionToTile(this.position, ctx.map.size);
+		controls.on("right-click", (pos, entityId) => {
+			if (ctx.activeEntityId !== this.id || !this.kingdom?.playerControlled) {
+				return;
+			}
 
-			if (isEqual(clickedTile, unitTile)) {
-				ctx.activeEntity = this;
+			if (!entityId) {
+				this.currentJob = this.move(ctx, toMapPosition(ctx.camera, pos));
+				return;
+			}
+
+			const entity = ctx.entities.get(entityId);
+			if (!entity) {
+				return;
+			}
+
+			if (entity instanceof Town) {
+				this.currentJob = this.enterTown(ctx, entity);
+				return;
+			}
+
+			if (entity instanceof Unit && !entity.kingdom?.playerControlled) {
+				this.currentJob = this.attack(ctx, entity);
+				return;
 			}
 		});
 
-		controls.on("right-click", (pos) => {
-			const moveTo = toMapPosition(ctx.camera, pos);
-
-			if (ctx.activeEntity === this && this.kingdom?.playerControlled) {
-				const tile = positionToTile(moveTo, ctx.map.size);
-
-				if (ctx.map.isWalkable(tile.y, tile.x)) {
-					// TODO: proper click target identification
-					for (const e of ctx.entities) {
-						if (e instanceof Town && isInBounds(pos, e.boundary)) {
-							this.currentJob = this.enterTown(ctx, e);
-							return;
-						}
-
-						if (
-							e instanceof Unit &&
-							isEqual(tile, positionToTile(e.position, ctx.map.size)) &&
-							!e.kingdom?.playerControlled
-						) {
-							this.currentJob = this.attack(ctx, e);
-							return;
-						}
-					}
-
-					this.currentJob = this.move(ctx, moveTo);
-				}
-			}
-		});
+		document.body.append(this.overlay);
 	}
 
 	leaveTown(): void {
@@ -139,6 +138,11 @@ export class Unit implements Entity<"position" | "movement"> {
 		const { movement, position } = this;
 		const { size } = ctx.map;
 
+		const tile = positionToTile(to, size);
+		if (!ctx.map.isWalkable(tile.y, tile.x)) {
+			return false;
+		}
+
 		const path = findPath(
 			positionToTile(position, size),
 			positionToTile(to, size),
@@ -150,7 +154,7 @@ export class Unit implements Entity<"position" | "movement"> {
 
 		while (path.length) {
 			drawPolyline(
-				ctx.context,
+				ctx.scene,
 				path.map((p) => toCanvasPosition(ctx.camera, p))
 			);
 
@@ -176,7 +180,8 @@ export class Unit implements Entity<"position" | "movement"> {
 		const isWithinReach = yield* this.follow(ctx, unit);
 
 		if (isWithinReach) {
-			ctx.entities.add(new Battle(this, unit));
+			const battle = new Battle(this, unit);
+			ctx.entities.set(battle.id, battle);
 		}
 	}
 
@@ -189,24 +194,26 @@ export class Unit implements Entity<"position" | "movement"> {
 			}
 		}
 
+		setStyles(this.overlay, getOverlayStyles(this.sprite.boundary));
+
 		this.render(ctx);
 	}
 
-	render({ context: ctx, frameInfo, camera, activeEntity }: Game): void {
+	render({ scene, frameInfo, camera, activeEntityId }: Game): void {
 		if (this.town) {
 			return;
 		}
 
 		const position = toCanvasPosition(camera, this.position);
 
-		if (activeEntity === this) {
-			ctx.beginPath();
-			ctx.fillStyle = "rgba(0,0,0,0.3)";
-			ctx.ellipse(position.x, position.y + 20, 20, 10, 0, 0, Math.PI * 2);
-			ctx.fill();
+		if (activeEntityId === this.id) {
+			scene.beginPath();
+			scene.fillStyle = "rgba(0,0,0,0.3)";
+			scene.ellipse(position.x, position.y + 20, 20, 10, 0, 0, Math.PI * 2);
+			scene.fill();
 		}
 
-		this.sprite.draw(ctx, {
+		this.sprite.draw(scene, {
 			position,
 			state: this.movement.state,
 			framesElapsed: frameInfo.framesElapsed,

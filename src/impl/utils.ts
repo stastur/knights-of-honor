@@ -1,4 +1,4 @@
-import { add, angle, distance, subtract } from "@app/utils/geometry";
+import { add, angle, Boundary, distance, subtract } from "@app/utils/geometry";
 
 import { Camera } from "./camera";
 import { Position, Movement, Components } from "./components";
@@ -69,4 +69,23 @@ export function getComponent<C extends keyof Components>(
 	component: C
 ): Pick<Components, C>[C] | undefined {
 	return Reflect.get(entity, component);
+}
+
+export function createOverlay(id: number | string) {
+	const overlay = document.createElement("div");
+	overlay.dataset.id = String(id);
+
+	return overlay;
+}
+
+export function getOverlayStyles(
+	boundary: Boundary
+): Partial<CSSStyleDeclaration> {
+	return {
+		position: "absolute",
+		left: boundary.x + "px",
+		top: boundary.y + "px",
+		width: boundary.w + "px",
+		height: boundary.h + "px",
+	};
 }

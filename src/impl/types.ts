@@ -3,6 +3,7 @@ import { Game } from "./game";
 
 export type Entity<C extends keyof Components = never> = Pick<Components, C> &
 	Tags & {
+		id: number;
 		init?(ctx: Game): void;
 		update(ctx: Game): void;
 	};

@@ -1,15 +1,17 @@
-import { add } from "@app/utils/geometry";
+import { add, Point } from "@app/utils/geometry";
 
-import { Game } from "./game";
+import { newId } from "./ids";
 import { Entity, Size } from "./types";
 
 export class Camera implements Entity<"position"> {
+	id = newId();
+
 	position = { x: 0, y: 0 };
 
 	dx = 0;
 	dy = 0;
 
-	constructor(public viewport: Size) {}
+	constructor(public viewport: Size, public screen: Size) {}
 
 	init(): void {
 		document.addEventListener("mousemove", (ev) => {
@@ -37,17 +39,18 @@ export class Camera implements Entity<"position"> {
 		});
 	}
 
-	update(ctx: Game): void {
+	setPosition(point: Point) {
 		const { w, h } = this.viewport;
 
+		const maxX = this.screen.w - w - 1;
+		const maxY = this.screen.h - h - 1;
+
+		this.position.x = Math.max(Math.min(point.x, maxX), 0);
+		this.position.y = Math.max(Math.min(point.y, maxY), 0);
+	}
+
+	update(): void {
 		const newPosition = add(this.position, { x: this.dx, y: this.dy });
-
-		const maxX = ctx.map.width - w - 1;
-		const maxY = ctx.map.height - h - 1;
-
-		newPosition.x = Math.max(Math.min(newPosition.x, maxX), 0);
-		newPosition.y = Math.max(Math.min(newPosition.y, maxY), 0);
-
-		this.position = newPosition;
+		this.setPosition(newPosition);
 	}
 }

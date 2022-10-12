@@ -20,6 +20,13 @@ export class Sprite<T extends string> {
 		}
 	>;
 
+	boundary: Boundary = {
+		x: 0,
+		y: 0,
+		w: 0,
+		h: 0,
+	};
+
 	constructor(states: Record<T, SpriteOptions>) {
 		this.states = mapValues(states, (options) => {
 			const image = new Image();
@@ -44,7 +51,7 @@ export class Sprite<T extends string> {
 			framesElapsed: number;
 			flip?: boolean;
 		}
-	): Boundary {
+	): void {
 		const sprite = this.states[props.state];
 
 		if (props.framesElapsed % sprite.framesHold === 0) {
@@ -90,6 +97,6 @@ export class Sprite<T extends string> {
 
 		props.flip && ctx.restore();
 
-		return boundary;
+		this.boundary = boundary;
 	}
 }

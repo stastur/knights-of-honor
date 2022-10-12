@@ -1,11 +1,14 @@
 import { Position } from "./components";
 import { Game } from "./game";
+import { newId } from "./ids";
 import { Sprite } from "./sprite";
 import { Entity } from "./types";
 import { Unit } from "./unit";
 import { toCanvasPosition } from "./utils";
 
 export class Battle implements Entity<"position"> {
+	id = newId();
+
 	position: Position;
 
 	focusable = true;
@@ -51,15 +54,15 @@ export class Battle implements Entity<"position"> {
 			}
 
 			if (!this.sideB.stats.health || !this.sideB.stats.health) {
-				ctx.entities.delete(this);
+				ctx.entities.delete(this.id);
 			}
 		}
 
 		this.render(ctx);
 	}
 
-	render({ camera, context, frameInfo: { framesElapsed } }: Game): void {
-		this.sprite.draw(context, {
+	render({ camera, scene, frameInfo: { framesElapsed } }: Game): void {
+		this.sprite.draw(scene, {
 			state: "default",
 			position: toCanvasPosition(camera, this.position),
 			framesElapsed,

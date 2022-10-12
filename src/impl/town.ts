@@ -1,16 +1,18 @@
-import { Boundary } from "@app/utils/geometry";
-import { isEqual } from "@app/utils/objects";
+import { setStyles } from "@app/utils/html";
 
 import { Position } from "./components";
-import { controls } from "./controls";
 import { Game } from "./game";
+import { newId } from "./ids";
 import { Province } from "./province";
 import { Sprite } from "./sprite";
 import { Entity } from "./types";
 import { Unit } from "./unit";
-import { positionToTile, toCanvasPosition, toMapPosition } from "./utils";
+import { createOverlay, getOverlayStyles, toCanvasPosition } from "./utils";
 
 export class Town implements Entity<"position"> {
+	id = newId();
+	overlay = createOverlay(this.id);
+
 	position: Position = { x: 2000, y: 2500 };
 
 	sprite = new Sprite({
@@ -23,32 +25,28 @@ export class Town implements Entity<"position"> {
 	// game data
 	marshal?: Unit;
 	province?: Province;
-	boundary: Boundary = { x: 0, y: 0, w: 0, h: 0 };
 
 	init(ctx: Game) {
-		controls.on("left-click", (pos) => {
-			const mapPosition = toMapPosition(ctx.camera, pos);
+		this.overlay.onclick = () => {
+			ctx.activeEntityId = this.id;
+		};
 
-			const clickedTile = positionToTile(mapPosition, ctx.map.size);
-			const unitTile = positionToTile(this.position, ctx.map.size);
-
-			if (isEqual(clickedTile, unitTile)) {
-				ctx.activeEntity = this;
-			}
-		});
+		document.body.append(this.overlay);
 	}
 
 	update(ctx: Game): void {
 		this.render(ctx);
 	}
 
-	render({ context: ctx, frameInfo: { framesElapsed }, camera }: Game): void {
+	render({ scene: ctx, frameInfo: { framesElapsed }, camera }: Game): void {
 		const position = toCanvasPosition(camera, this.position);
 
-		this.boundary = this.sprite.draw(ctx, {
+		this.sprite.draw(ctx, {
 			state: "default",
 			position,
 			framesElapsed,
 		});
+
+		setStyles(this.overlay, getOverlayStyles(this.sprite.boundary));
 	}
 }

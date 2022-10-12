@@ -2,6 +2,7 @@ import { createCanvas } from "@app/utils/canvas";
 import { Boundary, Point } from "@app/utils/geometry";
 
 import { Game } from "./game";
+import { newId } from "./ids";
 import { Entity, TileMap } from "./types";
 
 const FRAGMENT_W = 3840;
@@ -21,6 +22,8 @@ export interface Fragment {
 }
 
 export class Map implements Entity, TileMap {
+	id = newId();
+
 	size = 32;
 	rows = 1000;
 	cols = 1200;
@@ -132,11 +135,11 @@ export class Map implements Entity, TileMap {
 	}
 
 	update(ctx: Game): void {
-		this.drawViewport(ctx.backgroundContext, {
+		this.drawViewport(ctx.background, {
 			x: ctx.camera.position.x,
 			y: ctx.camera.position.y,
-			w: ctx.backgroundCanvas.clientWidth,
-			h: ctx.backgroundCanvas.clientHeight,
+			w: ctx.background.canvas.clientWidth,
+			h: ctx.background.canvas.clientHeight,
 		});
 	}
 

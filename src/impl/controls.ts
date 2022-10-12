@@ -11,7 +11,7 @@ type KeyControls =
 	| "right";
 type GameControls = MouseControls | KeyControls;
 
-type ClickHandler = (position: Position) => void;
+type ClickHandler = (position: Position, entityId?: number) => void;
 type KeyHandler = () => void;
 
 class Controls {
@@ -28,10 +28,16 @@ class Controls {
 
 		document.addEventListener("contextmenu", (ev) => {
 			ev.preventDefault();
+			const target = ev.target as HTMLElement;
+			const entityId = target.dataset.id
+				? Number.parseInt(target.dataset.id)
+				: undefined;
 
 			this.listeners
 				.get("right-click")
-				?.forEach((handler) => handler({ x: ev.clientX, y: ev.clientY }));
+				?.forEach((handler) =>
+					handler({ x: ev.clientX, y: ev.clientY }, entityId)
+				);
 		});
 
 		document.addEventListener("keydown", (ev) => {

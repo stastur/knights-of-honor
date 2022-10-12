@@ -1,12 +1,8 @@
 import { Camera } from "./camera";
-import { ControlPanel } from "./control-panel";
 import { controls } from "./controls";
-import { FpsInfo } from "./fps-info";
 import { Game } from "./game";
-import { GamePanel } from "./game-panel";
 import { Kingdom } from "./kingdom";
 import { Map } from "./map";
-import { MiniMap } from "./mini-map";
 import { Province } from "./province";
 import { Sprite } from "./sprite";
 import { Town } from "./town";
@@ -14,22 +10,22 @@ import { Unit } from "./unit";
 
 const body = document.body;
 
-const camera = new Camera({
-	w: body.clientWidth,
-	h: body.clientHeight,
-});
-const map = new Map();
+export const map = new Map();
 await map.load();
+
+const camera = new Camera(
+	{
+		w: body.clientWidth,
+		h: body.clientHeight,
+	},
+	{ w: map.width, h: map.height }
+);
 
 const game = new Game(map, camera);
 
-game.entities
-	.add(camera)
-	.add(map)
-	.add(new MiniMap(map.createMiniature(0.01)))
-	.add(new FpsInfo())
-	.add(new GamePanel())
-	.add(new ControlPanel());
+[map, camera].forEach((e) => {
+	game.entities.set(e.id, e);
+});
 
 const human = new Unit(
 	"human",
@@ -81,28 +77,34 @@ const pig = new Unit(
 pig.position = { x: 2000, y: 2100 };
 
 const humanKingdom = new Kingdom(true);
-
-humanKingdom.units.push(human);
-human.kingdom = humanKingdom;
+humanKingdom.addUnit(human);
 
 const pigKingdom = new Kingdom(false);
-pigKingdom.units.push(pig);
-pig.kingdom = pigKingdom;
+pigKingdom.addUnit(pig);
 
 const humanProvince = new Province([]);
 const humanTown = new Town();
 
+humanKingdom.addProvince(humanProvince);
 humanTown.province = humanProvince;
-humanProvince.kingdom = humanKingdom;
 humanProvince.town = humanTown;
-humanKingdom.provinces.push(humanProvince);
 
-game.entities
-	.add(new Town())
-	.add(human)
-	.add(pig)
-	.add(pigKingdom)
-	.add(humanKingdom);
+[map, camera, humanTown, human, pig, pigKingdom, humanKingdom].forEach((e) => {
+	game.entities.set(e.id, e);
+});
 
 controls.init();
 game.start();
+
+function _makeKingdom(
+	name: string,
+	province: Province,
+	options = { playerControlled: false }
+): Kingdom {
+	const kingdom = new Kingdom(options.playerControlled);
+	kingdom.addProvince(province);
+
+	return kingdom;
+}
+
+export { game };
