@@ -8,6 +8,8 @@ type Resource = "gold" | "piety" | "books";
 
 class Kingdom implements Entity {
 	id = newId();
+	// TODO: should be a parameter
+	name = "province";
 
 	units: Unit[] = [];
 	provinces: Province[] = [];
@@ -26,6 +28,15 @@ class Kingdom implements Entity {
 	constructor(public playerControlled: boolean) {}
 
 	update(_ctx: Game): void {}
+
+	// Power
+	increasePower() {
+		this.stats.power = Math.max(this.stats.power + 1, 5);
+	}
+
+	decreasePower() {
+		this.stats.power = Math.max(this.stats.power - 1, 0);
+	}
 
 	// Army and territories
 	addUnit = (unit: Unit): void => {

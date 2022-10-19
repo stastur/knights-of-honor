@@ -30,7 +30,7 @@ export class Battle implements Entity<"position"> {
 	}
 
 	update(ctx: Game): void {
-		if (ctx.frameInfo.framesElapsed % 20 === 0) {
+		if (ctx.frameInfo.currentFrame % 20 === 0) {
 			this.sideA.stats.health = Math.max(
 				this.sideA.stats.health -
 					Math.max(this.sideB.stats.damage - this.sideA.stats.defense, 0),
@@ -61,11 +61,11 @@ export class Battle implements Entity<"position"> {
 		this.render(ctx);
 	}
 
-	render({ camera, scene, frameInfo: { framesElapsed } }: Game): void {
+	render({ camera, scene, frameInfo: { currentFrame: framesElapsed } }: Game): void {
 		this.sprite.draw(scene, {
 			state: "default",
 			position: toCanvasPosition(camera, this.position),
-			framesElapsed,
+			currentFrame: framesElapsed,
 		});
 	}
 }

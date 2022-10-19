@@ -1,3 +1,4 @@
+import { Area } from "./area";
 import { Camera } from "./camera";
 import { controls } from "./controls";
 import { Game } from "./game";
@@ -82,14 +83,25 @@ humanKingdom.addUnit(human);
 const pigKingdom = new Kingdom(false);
 pigKingdom.addUnit(pig);
 
-const humanProvince = new Province([]);
 const humanTown = new Town();
+const humanProvince = new Province(humanTown, []);
+
+humanProvince.addArea(new Area("village", { x: 2100, y: 2100 }));
+humanProvince.addArea(new Area("village", { x: 2200, y: 2150 }));
+humanProvince.addArea(new Area("village", { x: 2300, y: 2170 }));
 
 humanKingdom.addProvince(humanProvince);
-humanTown.province = humanProvince;
-humanProvince.town = humanTown;
 
-[map, camera, humanTown, human, pig, pigKingdom, humanKingdom].forEach((e) => {
+[
+	map,
+	camera,
+	humanTown,
+	human,
+	pig,
+	pigKingdom,
+	humanKingdom,
+	...humanProvince.areas,
+].forEach((e) => {
 	game.entities.set(e.id, e);
 });
 

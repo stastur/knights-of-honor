@@ -23,3 +23,12 @@ export const randomColor = (): string => {
 
 	return `#${hexCode}`;
 };
+
+export function assertIsDefined<T>(
+	v: T,
+	message?: string
+): asserts v is NonNullable<T> {
+	if (v === null || v === undefined) {
+		throw new Error(message);
+	}
+}

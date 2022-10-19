@@ -216,7 +216,7 @@ export class Unit implements Entity<"position" | "movement"> {
 		this.sprite.draw(scene, {
 			position,
 			state: this.movement.state,
-			framesElapsed: frameInfo.framesElapsed,
+			currentFrame: frameInfo.currentFrame,
 			flip: Math.abs(this.movement.angle) > 0.5 * Math.PI,
 		});
 	}

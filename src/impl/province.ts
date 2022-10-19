@@ -1,36 +1,30 @@
 import { Point } from "@app/utils/geometry";
 
+import { Area } from "./area";
 import { Game } from "./game";
 import { newId } from "./ids";
 import { Kingdom } from "./kingdom";
 import { Town } from "./town";
 import { Entity } from "./types";
-import { toCanvasPosition } from "./utils";
 
 class Province implements Entity {
 	id = newId();
+	// TODO: should be a parameter
+	name = "province";
 
-	town?: Town;
 	kingdom?: Kingdom;
 
-	areas: unknown[] = [];
+	areas: Area[] = [];
 
-	constructor(public border: Point[]) {}
+	constructor(public town: Town, public border: Point[]) {
+		town.province = this;
+	}
 
-	init(_ctx: Game): void {}
+	update(_ctx: Game): void {}
 
-	update(ctx: Game): void {
-		ctx.scene.strokeStyle = "white";
-		ctx.scene.beginPath();
-		this.border
-			.map((p) => toCanvasPosition(ctx.camera, p))
-			.forEach((p) => {
-				ctx.scene.lineTo(p.x, p.y);
-			});
-		ctx.scene.stroke();
-
-		ctx.scene.fillStyle = "rgba(0,0,0,0.2)";
-		ctx.scene.fill();
+	addArea(area: Area) {
+		this.areas.push(area);
+		area.province = this;
 	}
 }
 

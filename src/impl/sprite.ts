@@ -48,13 +48,13 @@ export class Sprite<T extends string> {
 		props: {
 			state: T;
 			position: Position;
-			framesElapsed: number;
+			currentFrame: number;
 			flip?: boolean;
 		}
 	): void {
 		const sprite = this.states[props.state];
 
-		if (props.framesElapsed % sprite.framesHold === 0) {
+		if (props.currentFrame % sprite.framesHold === 0) {
 			let nextFrame = (sprite.frame + 1) % sprite.frames;
 
 			if (sprite.finite && sprite.frame === sprite.frames - 1) {

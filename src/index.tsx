@@ -5,11 +5,12 @@ import { createRoot } from "react-dom/client";
 import "./reset.css";
 import "./styles.css";
 import { game, map } from "./impl";
+import { EntityPanel } from "./impl/hud/entity-panel";
+import { FrameInfo } from "./impl/hud/fps-info";
+import { GameControls } from "./impl/hud/game-controls";
+import { KingdomPanel } from "./impl/hud/kingdom-panel";
+import { MiniMap } from "./impl/hud/mini-map";
 import { Kingdom } from "./impl/kingdom";
-import { FrameInfo } from "./impl/ui/fps-info";
-import { GameControls } from "./impl/ui/game-controls";
-import { KingdomPanel } from "./impl/ui/kingdom-panel";
-import { MiniMap } from "./impl/ui/mini-map";
 
 const App = () => {
 	const [_, set] = useState(0);
@@ -27,6 +28,10 @@ const App = () => {
 	) as Kingdom;
 
 	const miniature = useRef(map.createMiniature(0.01));
+	const entity =
+		game.activeEntityId !== undefined
+			? game.entities.get(game.activeEntityId)
+			: null;
 
 	return (
 		<>
@@ -44,6 +49,10 @@ const App = () => {
 
 			<div className="absolute bottom-0 right-0">
 				<MiniMap camera={game.camera} miniature={miniature.current} />
+			</div>
+
+			<div className="absolute bottom-0 left-1/2 -translate-x-1/2">
+				{entity && <EntityPanel entity={entity} />}
 			</div>
 		</>
 	);
