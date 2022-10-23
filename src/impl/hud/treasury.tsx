@@ -1,22 +1,29 @@
 import { Center, HStack } from "@chakra-ui/react";
+import { observer } from "mobx-react-lite";
 import React from "react";
 
 import { GiBookCover, GiCoins, GiPopeCrown } from "react-icons/gi";
 
-export const Treasury = (): JSX.Element => {
+import { Kingdom } from "../kingdom";
+
+interface TreasuryProps {
+	kingdom: Kingdom;
+}
+
+export const Treasury = observer(({ kingdom }: TreasuryProps): JSX.Element => {
 	return (
 		<HStack>
 			<Center>
-				<GiPopeCrown /> piety
+				<GiPopeCrown /> {kingdom.stats.piety}
 			</Center>
 
 			<Center>
-				<GiBookCover /> books
+				<GiBookCover /> {kingdom.stats.books}
 			</Center>
 
 			<Center>
-				<GiCoins /> gold
+				<GiCoins /> {kingdom.stats.gold}
 			</Center>
 		</HStack>
 	);
-};
+});

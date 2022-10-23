@@ -1,3 +1,5 @@
+import { makeAutoObservable } from "mobx";
+
 import { add, Point } from "@app/utils/geometry";
 
 import { newId } from "./ids";
@@ -11,7 +13,9 @@ export class Camera implements Entity<"position"> {
 	dx = 0;
 	dy = 0;
 
-	constructor(public viewport: Size, public screen: Size) {}
+	constructor(public viewport: Size, public screen: Size) {
+		makeAutoObservable(this);
+	}
 
 	init(): void {
 		document.addEventListener("mousemove", (ev) => {

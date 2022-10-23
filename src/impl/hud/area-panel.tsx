@@ -7,7 +7,7 @@ interface AreaPanelProps {
 }
 
 const textForType: Record<Area["type"], string> = {
-	coastalVillage: "Coastal village",
+	coastal: "Coastal village",
 	farm: "Farm",
 	monastery: "Monastery",
 	village: "Village",

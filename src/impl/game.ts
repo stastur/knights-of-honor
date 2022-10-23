@@ -1,8 +1,11 @@
+import { action, makeAutoObservable } from "mobx";
+
 import { createCanvas, clearCanvas } from "@app/utils/canvas";
 import { setStyles } from "@app/utils/html";
 
 import { Camera } from "./camera";
-import { Entity, TileMap } from "./types";
+import { WorldMap } from "./map";
+import { Entity } from "./types";
 
 const TARGET_FPS = 60;
 const ONE_SECOND = 1000;
@@ -22,8 +25,8 @@ interface Hooks {
 }
 
 export class Game {
-	entities = new Map<number, Entity>();
-	activeEntityId?: number;
+	entities = new Map<Entity["id"], Entity>();
+	activeEntityId?: Entity["id"];
 
 	frameInfo: FrameInfo = {
 		timeElapsed: 0,
@@ -37,10 +40,12 @@ export class Game {
 	scene: CanvasRenderingContext2D;
 
 	constructor(
-		public map: TileMap,
+		public map: WorldMap,
 		public camera: Camera,
 		public hooks: Partial<Hooks> = {}
 	) {
+		makeAutoObservable(this);
+
 		// TODO: clean up this part
 		const backgroundCanvas = createCanvas(
 			document.body.clientWidth,
@@ -70,16 +75,19 @@ export class Game {
 		document.body.append(backgroundCanvas, sceneCanvas);
 	}
 
-	start = (): void => {
-		this.isRunning = true;
-
+	init() {
 		this.entities.forEach((e) => e.init?.(this));
+	}
+
+	start = (): void => {
+		this.init();
+		this.isRunning = true;
 
 		let then = performance.now();
 		let lastMeasurement = then;
 		let frames = 0;
 
-		const loop = (now: number): void => {
+		const loop = action((now: number): void => {
 			this.frameInfo.stopFrame = requestAnimationFrame(loop);
 
 			const elapsed = now - then;
@@ -101,15 +109,15 @@ export class Game {
 					}
 				}
 
-				this.update(this);
+				this.update();
 			}
-		};
+		});
 
 		this.frameInfo.stopFrame = requestAnimationFrame(loop);
 		this.hooks.onStart?.(this);
 	};
 
-	update(ctx: Game): void {
+	update(): void {
 		if (!this.isRunning) {
 			return;
 		}
@@ -117,8 +125,13 @@ export class Game {
 		clearCanvas(this.background);
 		clearCanvas(this.scene);
 
+		this.map.draw(this.background, {
+			...this.camera.position,
+			...this.camera.viewport,
+		});
+
 		this.entities.forEach((e) => {
-			e.update(ctx);
+			e.update(this);
 		});
 
 		this.hooks.onUpdate?.(this);

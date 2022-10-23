@@ -1,14 +1,20 @@
 import { Box, Grid, useDisclosure } from "@chakra-ui/react";
+import { observer } from "mobx-react-lite";
 import React from "react";
 
 import { Times } from "@app/components/times";
 
 import { AvailableImprovementsMenu } from "./available-improvements";
+import { BuildingCell } from "./building-cell";
+import { ControlBox, useControlBox } from "./control-box";
+import { useProvinceContext } from "./town-context";
 
 const MAX_BUILDINGS = 18;
 
-export const BuildingsPanel = (): JSX.Element => {
+export const BuildingsPanel = observer((): JSX.Element => {
 	const { isOpen, onClose, onToggle } = useDisclosure();
+	const { improvements } = useProvinceContext();
+	const { itemsToBeRemoved, ...controlBoxProps } = useControlBox();
 
 	return (
 		<AvailableImprovementsMenu
@@ -19,10 +25,10 @@ export const BuildingsPanel = (): JSX.Element => {
 			<Grid
 				position="relative"
 				templateColumns="repeat(3, 4.5rem)"
-				templateRows="repeat(6, 1fr)"
+				templateRows="repeat(6, 3rem)"
 				gap={2}
 			>
-				{/* {values(province.buildings).map((b) => (
+				{[...improvements.completed.values()].map((b) => (
 					<ControlBox
 						{...controlBoxProps}
 						key={b.name}
@@ -37,12 +43,12 @@ export const BuildingsPanel = (): JSX.Element => {
 					>
 						<BuildingCell building={b} />
 					</ControlBox>
-				))} */}
+				))}
 
-				<Times n={MAX_BUILDINGS - 0}>
+				<Times n={MAX_BUILDINGS - improvements.completed.size}>
 					<Box
-						width="100%"
-						height="100%"
+						width="full"
+						height="full"
 						backgroundColor="blackAlpha.200"
 						onClick={onToggle}
 						_focus={{ outline: "1px solid gold" }}
@@ -52,4 +58,4 @@ export const BuildingsPanel = (): JSX.Element => {
 			</Grid>
 		</AvailableImprovementsMenu>
 	);
-};
+});

@@ -1,13 +1,14 @@
 import { Box, Flex, Grid, GridItem } from "@chakra-ui/react";
+import { observer } from "mobx-react-lite";
 import React from "react";
 
-import { Unit } from "../unit";
+import { Marshal } from "../marshal";
 
 interface UnitPanelProps {
-	unit: Unit;
+	unit: Marshal;
 }
 
-export const UnitPanel = ({ unit }: UnitPanelProps) => {
+export const UnitPanel = observer(({ unit }: UnitPanelProps) => {
 	if (unit.kingdom?.playerControlled) {
 		return (
 			<Flex wrap="nowrap">
@@ -53,4 +54,4 @@ export const UnitPanel = ({ unit }: UnitPanelProps) => {
 			<Box>something</Box>
 		</Flex>
 	);
-};
+});

@@ -1,17 +1,16 @@
-import { Area } from "./area";
+// import { Area } from "./area";
 import { Camera } from "./camera";
 import { controls } from "./controls";
 import { Game } from "./game";
 import { Kingdom } from "./kingdom";
-import { Map } from "./map";
+import { WorldMap } from "./map";
+import { Marshal } from "./marshal";
 import { Province } from "./province";
 import { Sprite } from "./sprite";
-import { Town } from "./town";
-import { Unit } from "./unit";
 
 const body = document.body;
 
-export const map = new Map();
+export const map = new WorldMap();
 await map.load();
 
 const camera = new Camera(
@@ -24,11 +23,7 @@ const camera = new Camera(
 
 const game = new Game(map, camera);
 
-[map, camera].forEach((e) => {
-	game.entities.set(e.id, e);
-});
-
-const human = new Unit(
+const human = new Marshal(
 	"human",
 	new Sprite({
 		idle: {
@@ -47,11 +42,12 @@ const human = new Unit(
 			src: "images/human/dead.png",
 			finite: true,
 		},
-	})
+	}),
+	game
 );
 human.position = { x: 2000, y: 2000 };
 
-const pig = new Unit(
+const pig = new Marshal(
 	"pig",
 	new Sprite({
 		idle: {
@@ -73,50 +69,32 @@ const pig = new Unit(
 			finite: true,
 			scale: 1.25,
 		},
-	})
+	}),
+	game
 );
 pig.position = { x: 2000, y: 2100 };
 
-const humanKingdom = new Kingdom(true);
-humanKingdom.addUnit(human);
+const humanKingdom = new Kingdom("human kingdom", true);
+humanKingdom.knights.add(human.id);
+human.kingdom = humanKingdom;
 
-const pigKingdom = new Kingdom(false);
-pigKingdom.addUnit(pig);
+const pigKingdom = new Kingdom("pig kingdom", false);
+pigKingdom.knights.add(pig.id);
+pig.kingdom = pigKingdom;
 
-const humanTown = new Town();
-const humanProvince = new Province(humanTown, []);
+const humanProvince = new Province("human prov", game);
 
-humanProvince.addArea(new Area("village", { x: 2100, y: 2100 }));
-humanProvince.addArea(new Area("village", { x: 2200, y: 2150 }));
-humanProvince.addArea(new Area("village", { x: 2300, y: 2170 }));
+// humanProvince.addArea(new Area("village", { x: 2100, y: 2100 }));
+// humanProvince.addArea(new Area("village", { x: 2200, y: 2150 }));
+// humanProvince.addArea(new Area("village", { x: 2300, y: 2170 }));
 
-humanKingdom.addProvince(humanProvince);
+humanKingdom.provinces.add(humanProvince.id);
 
-[
-	map,
-	camera,
-	humanTown,
-	human,
-	pig,
-	pigKingdom,
-	humanKingdom,
-	...humanProvince.areas,
-].forEach((e) => {
+[camera, human, pig, pigKingdom, humanKingdom, humanProvince].forEach((e) => {
 	game.entities.set(e.id, e);
 });
 
 controls.init();
 game.start();
-
-function _makeKingdom(
-	name: string,
-	province: Province,
-	options = { playerControlled: false }
-): Kingdom {
-	const kingdom = new Kingdom(options.playerControlled);
-	kingdom.addProvince(province);
-
-	return kingdom;
-}
 
 export { game };

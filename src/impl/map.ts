@@ -1,10 +1,6 @@
 import { createCanvas } from "@app/utils/canvas";
 import { Boundary, Point } from "@app/utils/geometry";
 
-import { Game } from "./game";
-import { newId } from "./ids";
-import { Entity, TileMap } from "./types";
-
 const FRAGMENT_W = 3840;
 const FRAGMENT_H = 3200;
 
@@ -21,9 +17,7 @@ export interface Fragment {
 	y: number;
 }
 
-export class Map implements Entity, TileMap {
-	id = newId();
-
+export class WorldMap {
 	size = 32;
 	rows = 1000;
 	cols = 1200;
@@ -74,43 +68,41 @@ export class Map implements Entity, TileMap {
 		);
 	}
 
-	drawViewport(ctx: CanvasRenderingContext2D, cameraBounds: Boundary): void {
-		const startCol = Math.floor(cameraBounds.x / FRAGMENT_W);
-		const endCol = Math.floor((cameraBounds.x + cameraBounds.w) / FRAGMENT_W);
+	draw(ctx: CanvasRenderingContext2D, visibleArea: Boundary): void {
+		const startCol = Math.floor(visibleArea.x / FRAGMENT_W);
+		const endCol = Math.floor((visibleArea.x + visibleArea.w) / FRAGMENT_W);
 
-		const startRow = Math.floor(cameraBounds.y / FRAGMENT_H);
-		const endRow = Math.floor((cameraBounds.y + cameraBounds.h) / FRAGMENT_H);
+		const startRow = Math.floor(visibleArea.y / FRAGMENT_H);
+		const endRow = Math.floor((visibleArea.y + visibleArea.h) / FRAGMENT_H);
 
-		const visibleMapFragments: Fragment[] = [];
+		const visibleFragments: Fragment[] = [];
 
 		for (let r = startRow; r <= endRow; r++) {
 			for (let c = startCol; c <= endCol; c++) {
 				const fragment = this.fragments[r * FRAGMENT_ROWS + c];
-				visibleMapFragments.push(fragment);
+				visibleFragments.push(fragment);
 			}
 		}
 
-		const viewportFragments: Boundary[] = visibleMapFragments.map(
-			(fragment) => {
-				const lt: Point = {
-					x: Math.max(fragment.x, cameraBounds.x),
-					y: Math.max(fragment.y, cameraBounds.y),
-				};
+		const viewportFragments: Boundary[] = visibleFragments.map((fragment) => {
+			const lt: Point = {
+				x: Math.max(fragment.x, visibleArea.x),
+				y: Math.max(fragment.y, visibleArea.y),
+			};
 
-				const rb: Point = {
-					x: Math.min(fragment.x + FRAGMENT_W, cameraBounds.x + cameraBounds.w),
-					y: Math.min(fragment.y + FRAGMENT_H, cameraBounds.y + cameraBounds.h),
-				};
+			const rb: Point = {
+				x: Math.min(fragment.x + FRAGMENT_W, visibleArea.x + visibleArea.w),
+				y: Math.min(fragment.y + FRAGMENT_H, visibleArea.y + visibleArea.h),
+			};
 
-				return { ...lt, w: rb.x - lt.x, h: rb.y - lt.y };
-			}
-		);
+			return { ...lt, w: rb.x - lt.x, h: rb.y - lt.y };
+		});
 
 		let dx = 0;
 		let dy = 0;
 
 		for (let i = 0; i < viewportFragments.length; i++) {
-			const fragment = visibleMapFragments[i];
+			const fragment = visibleFragments[i];
 			const boundary = viewportFragments[i];
 
 			ctx.drawImage(
@@ -127,20 +119,11 @@ export class Map implements Entity, TileMap {
 
 			dx += boundary.w;
 
-			if (dx >= cameraBounds.w) {
+			if (dx >= visibleArea.w) {
 				dx = 0;
 				dy += boundary.h;
 			}
 		}
-	}
-
-	update(ctx: Game): void {
-		this.drawViewport(ctx.background, {
-			x: ctx.camera.position.x,
-			y: ctx.camera.position.y,
-			w: ctx.background.canvas.clientWidth,
-			h: ctx.background.canvas.clientHeight,
-		});
 	}
 
 	createMiniature(scale = 1): string {

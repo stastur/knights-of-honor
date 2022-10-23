@@ -1,3 +1,5 @@
+import { makeAutoObservable } from "mobx";
+
 import { drawPolyline } from "@app/utils/canvas";
 import { angle } from "@app/utils/geometry";
 import { setStyles } from "@app/utils/html";
@@ -10,8 +12,8 @@ import { Game } from "./game";
 import { newId } from "./ids";
 import { Kingdom } from "./kingdom";
 import { findPath } from "./path-finding";
+import { Province } from "./province";
 import { Sprite } from "./sprite";
-import { Town } from "./town";
 import { Entity } from "./types";
 import {
 	move,
@@ -23,7 +25,13 @@ import {
 	getOverlayStyles,
 } from "./utils";
 
-export class Unit implements Entity<"position" | "movement"> {
+const baseStats = {
+	damage: 0,
+	health: 100,
+	food: 100,
+};
+
+export class Marshal implements Entity<"position" | "movement"> {
 	id = newId();
 	overlay = createOverlay(this.id);
 
@@ -39,25 +47,27 @@ export class Unit implements Entity<"position" | "movement"> {
 	focusable = true;
 	locked = false;
 
+	isDead = false;
+	isInFight = false;
+
 	// data
-	town?: Town;
+	province?: Province;
 	kingdom?: Kingdom;
 
-	baseStats = {
-		health: 100,
-		damage: 5,
-		defense: 1,
-	};
-
-	stats = {
-		health: this.baseStats.health,
-		damage: this.baseStats.damage,
-		defense: this.baseStats.defense,
-	};
+	level = 0;
+	skills = [];
+	stats = { ...baseStats };
+	units = [];
 
 	currentJob?: Generator;
 
-	constructor(public name: string, public sprite: Sprite<Movement["state"]>) {}
+	constructor(
+		public name: string,
+		public sprite: Sprite<Movement["state"]>,
+		public game: Game
+	) {
+		makeAutoObservable(this);
+	}
 
 	init(ctx: Game): void {
 		this.overlay.onclick = () => {
@@ -79,12 +89,12 @@ export class Unit implements Entity<"position" | "movement"> {
 				return;
 			}
 
-			if (entity instanceof Town) {
+			if (entity instanceof Province) {
 				this.currentJob = this.enterTown(ctx, entity);
 				return;
 			}
 
-			if (entity instanceof Unit && !entity.kingdom?.playerControlled) {
+			if (entity instanceof Marshal && !entity.kingdom?.playerControlled) {
 				this.currentJob = this.attack(ctx, entity);
 				return;
 			}
@@ -93,32 +103,32 @@ export class Unit implements Entity<"position" | "movement"> {
 		document.body.append(this.overlay);
 	}
 
-	leaveTown(): void {
-		if (this.town) {
-			const { x, y } = this.town.position;
+	setOutOfTown(): void {
+		if (this.province) {
+			const { x, y } = this.province.position;
 
 			this.position = { x, y: y + 50 };
-			this.town.marshal = undefined;
+			this.province.marshal = undefined;
 		}
 
-		this.town = undefined;
+		this.province = undefined;
 	}
 
-	*enterTown(ctx: Game, town: Town) {
+	*enterTown(ctx: Game, town: Province) {
 		const atPosition = yield* this.move(ctx, town.position);
 
 		if (atPosition) {
-			this.town = town;
+			this.province = town;
 
 			if (town.marshal) {
-				town.marshal.leaveTown();
+				town.marshal.setOutOfTown();
 			}
 
 			town.marshal = this;
 		}
 	}
 
-	*follow(ctx: Game, unit: Unit) {
+	*follow(ctx: Game, unit: Marshal) {
 		const initialPosition = { ...unit.position };
 
 		let follow = this.move(ctx, initialPosition);
@@ -149,7 +159,7 @@ export class Unit implements Entity<"position" | "movement"> {
 			ctx.map
 		).map((t) => tileToPosition(t, size));
 
-		this.town && this.leaveTown();
+		this.province && this.setOutOfTown();
 		movement.state = "moving";
 
 		while (path.length) {
@@ -176,7 +186,7 @@ export class Unit implements Entity<"position" | "movement"> {
 		return true;
 	}
 
-	*attack(ctx: Game, unit: Unit) {
+	*attack(ctx: Game, unit: Marshal) {
 		const isWithinReach = yield* this.follow(ctx, unit);
 
 		if (isWithinReach) {
@@ -194,15 +204,14 @@ export class Unit implements Entity<"position" | "movement"> {
 			}
 		}
 
-		setStyles(this.overlay, getOverlayStyles(this.sprite.boundary));
-
 		this.render(ctx);
 	}
 
 	render({ scene, frameInfo, camera, activeEntityId }: Game): void {
-		if (this.town) {
-			return;
-		}
+		setStyles(this.overlay, {
+			...getOverlayStyles(this.sprite.boundary),
+			...(this.province && { display: "none" }),
+		});
 
 		const position = toCanvasPosition(camera, this.position);
 

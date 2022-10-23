@@ -1,3 +1,5 @@
+import { makeObservable, observable } from "mobx";
+
 import { setStyles } from "@app/utils/html";
 
 import { Position } from "./components";
@@ -7,35 +9,47 @@ import { Province } from "./province";
 import { Entity } from "./types";
 import { createOverlay, getOverlayStyles, toCanvasPosition } from "./utils";
 
-type AreaType = "coastalVillage" | "farm" | "monastery" | "village";
+type Type = "coastal" | "farm" | "village" | "monastery";
+
+const baseStats = {
+	gold: 0,
+	food: 0,
+	piety: 0,
+	books: 0,
+	workers: 0,
+};
+
+const baseStatsFor: Record<Type, Partial<typeof baseStats>> = {
+	coastal: {
+		gold: 1,
+		food: 1,
+	},
+	farm: {
+		food: 1,
+	},
+	monastery: {
+		piety: 1,
+		books: 1,
+	},
+	village: {
+		workers: 1,
+	},
+};
 
 export class Area implements Entity<"position"> {
 	id = newId();
 	overlay = createOverlay(this.id);
 
-	baseStats = {
-		gold: 0,
-		food: 0,
-		piety: 0,
-		books: 0,
-		workers: 0,
-	};
-
-	stats = {
-		...this.baseStats,
-	};
+	stats: typeof baseStats;
 
 	province?: Province;
 
-	constructor(public type: AreaType, public position: Position) {
-		const resourceForType: Record<AreaType, keyof typeof this.baseStats> = {
-			coastalVillage: "gold",
-			farm: "food",
-			monastery: "piety",
-			village: "workers",
-		};
+	constructor(public type: Type, public position: Position) {
+		makeObservable(this, {
+			stats: observable,
+		});
 
-		this.stats[resourceForType[type]]++;
+		this.stats = { ...baseStats, ...baseStatsFor[type] };
 	}
 
 	init(ctx: Game): void {

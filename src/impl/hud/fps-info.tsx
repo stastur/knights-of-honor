@@ -1,12 +1,11 @@
+import { observer } from "mobx-react-lite";
 import React from "react";
 
-import { Game } from "../game";
+import { useGameContext } from "./game-context";
 
-interface FrameInfoProps {
-	info: Game["frameInfo"];
-}
+export const FrameInfo = observer(() => {
+	const { frameInfo: info } = useGameContext();
 
-export const FrameInfo = ({ info }: FrameInfoProps) => {
 	let color = "white";
 
 	if (info.fps > 55) {
@@ -22,4 +21,4 @@ export const FrameInfo = ({ info }: FrameInfoProps) => {
 			FPS: {info.fps}
 		</div>
 	);
-};
+});

@@ -1,7 +1,7 @@
 import { Building, Name } from "./building";
 import { buildings } from "./buildings";
 
-const resolve = (name: Name): Building => {
+export const resolve = (name: Name): Building => {
 	return buildings[name];
 };
 
@@ -35,6 +35,16 @@ export function canBeUpgradedTo(current: Building, next: Name): boolean {
 	}
 
 	return canBeUpgradedTo(resolve(current.next), next);
+}
+
+export function isUpgrade(current: Building, prev: Name): boolean {
+	if (!current.previous) {
+		return false;
+	}
+
+	return (
+		current.previous === prev || isUpgrade(resolve(current.previous), prev)
+	);
 }
 
 export const baseBuildingsList = [

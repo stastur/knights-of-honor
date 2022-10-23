@@ -17,7 +17,7 @@ export const BuildingDetails = ({
 	const {
 		name,
 		requiredFeatures,
-		bound: requiredBuildings,
+		requiredBuildings,
 		next,
 		// bonuses,
 		cost,

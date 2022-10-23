@@ -8,10 +8,8 @@ import {
 } from "@chakra-ui/react";
 import React, { PropsWithChildren } from "react";
 
-// import { DevelopmentProjects } from "../development-projects";
-// import { Features } from "../features";
-
 import { BuildingsPanel } from "./buildings-panel";
+import { Projects } from "./projects";
 
 export const DevelopmentMenu = ({
 	children,
@@ -28,7 +26,7 @@ export const DevelopmentMenu = ({
 
 					<BuildingsPanel />
 
-					{/* <DevelopmentProjects /> */}
+					<Projects />
 				</PopoverBody>
 			</PopoverContent>
 		</Popover>

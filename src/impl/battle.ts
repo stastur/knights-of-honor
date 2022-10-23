@@ -1,9 +1,9 @@
 import { Position } from "./components";
 import { Game } from "./game";
 import { newId } from "./ids";
+import { Marshal } from "./marshal";
 import { Sprite } from "./sprite";
 import { Entity } from "./types";
-import { Unit } from "./unit";
 import { toCanvasPosition } from "./utils";
 
 export class Battle implements Entity<"position"> {
@@ -22,7 +22,7 @@ export class Battle implements Entity<"position"> {
 		},
 	});
 
-	constructor(public sideA: Unit, public sideB: Unit) {
+	constructor(public sideA: Marshal, public sideB: Marshal) {
 		this.position = { ...sideB.position };
 
 		sideA.locked = true;

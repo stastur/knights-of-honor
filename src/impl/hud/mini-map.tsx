@@ -1,13 +1,13 @@
-import React, { useEffect, useRef } from "react";
+import { observer } from "mobx-react-lite";
+import React, { useEffect, useMemo, useRef } from "react";
 
-import { Camera } from "../camera";
+import { useGameContext } from "./game-context";
 
-interface MiniMapProps {
-	camera: Camera;
-	miniature: string;
-}
+export const MiniMap = observer(() => {
+	const { camera, map } = useGameContext();
 
-export const MiniMap = ({ camera, miniature }: MiniMapProps) => {
+	const miniature = useMemo(() => map.createMiniature(0.01), []);
+
 	const containerRef = useRef<HTMLDivElement>(null);
 	const activeAreaRef = useRef<HTMLDivElement>(null);
 
@@ -100,4 +100,4 @@ export const MiniMap = ({ camera, miniature }: MiniMapProps) => {
 			></div>
 		</div>
 	);
-};
+});

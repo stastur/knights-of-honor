@@ -1,9 +1,10 @@
 import { Box, Grid, GridProps } from "@chakra-ui/react";
+import { observer } from "mobx-react-lite";
 import React from "react";
 
 import { Times } from "@app/components/times";
 
-export const GuardsPanel = (props: GridProps): JSX.Element => {
+export const GuardsPanel = observer((props: GridProps): JSX.Element => {
 	return (
 		<Grid
 			{...props}
@@ -16,4 +17,4 @@ export const GuardsPanel = (props: GridProps): JSX.Element => {
 			</Times>
 		</Grid>
 	);
-};
+});

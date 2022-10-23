@@ -1,53 +1,72 @@
+import { makeAutoObservable } from "mobx";
+
 import { Game } from "./game";
 import { newId } from "./ids";
+import { Marshal } from "./marshal";
 import { Province } from "./province";
 import { Entity } from "./types";
-import { Unit } from "./unit";
 
-type Resource = "gold" | "piety" | "books";
+const baseStats = {
+	gold: 1000,
+	piety: 1000,
+	books: 1000,
+
+	power: 0,
+};
+
+type Resource = keyof Pick<typeof baseStats, "books" | "gold" | "piety">;
 
 class Kingdom implements Entity {
 	id = newId();
-	// TODO: should be a parameter
-	name = "province";
 
-	units: Unit[] = [];
-	provinces: Province[] = [];
+	royalFamily = {
+		king: null,
+		queen: null,
 
-	baseStats = {
-		gold: 1000,
-		piety: 1000,
-		books: 1000,
-		power: 0,
+		children: [],
 	};
 
-	stats = {
-		...this.baseStats,
+	stats = { ...baseStats };
+
+	economy = {
+		taxRate: 0,
 	};
 
-	constructor(public playerControlled: boolean) {}
+	knights = new Set<Marshal["id"]>();
+	provinces = new Set<Province["id"]>();
+
+	diplomacy = new Map<
+		string,
+		{
+			relationship: number;
+		}
+	>();
+
+	constructor(public name: string, public playerControlled: boolean) {
+		makeAutoObservable(this);
+	}
 
 	update(_ctx: Game): void {}
 
 	// Power
-	increasePower() {
-		this.stats.power = Math.max(this.stats.power + 1, 5);
-	}
+	increasePower = () => {
+		this.stats.power = Math.min(this.stats.power + 1, 5);
+	};
 
-	decreasePower() {
+	decreasePower = () => {
 		this.stats.power = Math.max(this.stats.power - 1, 0);
-	}
+	};
 
 	// Army and territories
-	addUnit = (unit: Unit): void => {
-		this.units.push(unit);
-		unit.kingdom = this;
-	};
+	// addUnit = (unit: Unit): void => {
+	// 	this.units.push(unit);
+	// 	unit.kingdom = this;
+	// };
 
-	addProvince = (province: Province): void => {
-		this.provinces.push(province);
-		province.kingdom = this;
-	};
+	// addProvince = (province: Province): void => {
+	// 	this.provinces.push(province);
+	// 	province.kingdom = this;
+	// };
 
 	// Resources
 	spend(resource: Resource, value: number): void {
