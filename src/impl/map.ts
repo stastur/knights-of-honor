@@ -7,8 +7,14 @@ const FRAGMENT_H = 3200;
 const FRAGMENT_ROWS = 10;
 const FRAGMENT_COLUMNS = 10;
 
-const worldFragments = new Array(FRAGMENT_COLUMNS * FRAGMENT_ROWS).fill(
-	"images/map/0-3.png"
+const worldFragments = Array.from(
+	{ length: FRAGMENT_COLUMNS * FRAGMENT_ROWS },
+	(_, i) => {
+		const row = Math.floor(i / 10);
+		const col = i % 10;
+
+		return `images/map/${row}-${col}.png`;
+	}
 );
 
 export interface Fragment {
@@ -40,14 +46,14 @@ export class WorldMap {
 	}
 
 	loadImage(src: string): Promise<HTMLImageElement> {
-		return new Promise((resolve, reject) => {
+		return new Promise((resolve, _reject) => {
 			const image = new Image();
 			image.onload = () => {
 				resolve(image);
 			};
 
-			image.onerror = (err) => {
-				reject(err.toString());
+			image.onerror = (_err) => {
+				image.src = "images/map/0-3.png";
 			};
 
 			image.src = src;
