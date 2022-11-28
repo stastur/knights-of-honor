@@ -92,7 +92,7 @@ export const MiniMap = observer(() => {
 				ref={activeAreaRef}
 				className="absolute bg-contain border border-white"
 				style={{
-					width: wRatio * 100 + "%",
+					width: (wRatio * 100) / camera.scale + "%",
 					aspectRatio: wRatio / hRatio,
 					left: 100 * (camera.position.x / camera.screen.w) + "%",
 					top: 100 * (camera.position.y / camera.screen.h) + "%",

@@ -8,6 +8,7 @@ import { Entity, Size } from "./types";
 export class Camera implements Entity<"position"> {
 	id = newId();
 
+	scale = 1;
 	position = { x: 0, y: 0 };
 
 	dx = 0;
@@ -18,7 +19,12 @@ export class Camera implements Entity<"position"> {
 	}
 
 	init(): void {
-		document.addEventListener("mousemove", (ev) => {
+		this.initMoveHandlers(document as unknown as HTMLElement);
+		this.initScaleHandlers(document as unknown as HTMLElement);
+	}
+
+	initMoveHandlers(el: HTMLElement): void {
+		el.addEventListener("mousemove", (ev) => {
 			const shift = 50;
 			const triggerZone = 5;
 
@@ -43,7 +49,17 @@ export class Camera implements Entity<"position"> {
 		});
 	}
 
-	setPosition(point: Point) {
+	initScaleHandlers(el: HTMLElement): void {
+		el.addEventListener("wheel", (ev) => {
+			this.setScale(this.scale + ev.deltaY * -0.0005);
+		});
+	}
+
+	setScale(scale: number): void {
+		this.scale = Math.min(Math.max(0.1, scale), 1);
+	}
+
+	setPosition(point: Point): void {
 		const { w, h } = this.viewport;
 
 		const maxX = this.screen.w - w - 1;

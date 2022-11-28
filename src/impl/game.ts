@@ -75,7 +75,7 @@ export class Game {
 		document.body.append(backgroundCanvas, sceneCanvas);
 	}
 
-	init() {
+	init(): void {
 		this.entities.forEach((e) => e.init?.(this));
 	}
 

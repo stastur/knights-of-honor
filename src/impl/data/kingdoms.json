@@ -1,0 +1,335 @@
+{
+	"kingdoms": [
+		{
+			"name": "England",
+			"capital": "e51422",
+			"realms": [
+				"e6b761",
+				"1b7d5f",
+				"85095b",
+				"ee9557",
+				"8ce751",
+				"2f2846",
+				"3ee432",
+				"e51422"
+			]
+		},
+		{
+			"name": "Scotland",
+			"capital": "4ab123",
+			"realms": ["811a60", "4ab123"]
+		},
+		{
+			"name": "Ireland",
+			"capital": "b43d1f",
+			"realms": ["b1f163", "b43d1f"]
+		},
+		{
+			"name": "Castilia",
+			"capital": "c00a10",
+			"realms": ["42d32d", "b04e24", "c00a10"]
+		},
+		{
+			"name": "Aragon",
+			"capital": "63ee44",
+			"realms": ["63ee44"]
+		},
+		{
+			"name": "France",
+			"capital": "5e5c0a",
+			"realms": [
+				"51e69c",
+				"4c5462",
+				"eaa65c",
+				"f28452",
+				"6bcc3a",
+				"e9031d",
+				"5e5c0a"
+			]
+		},
+		{
+			"name": "Germany",
+			"capital": "fcae04",
+			"realms": [
+				"15eb25",
+				"1931a3",
+				"82bd9f",
+				"1d209e",
+				"b7839d",
+				"bb7298",
+				"178e64",
+				"88f856",
+				"582153",
+				"2403ef",
+				"d94731",
+				"11fc2a",
+				"4ea01e",
+				"1dc91b",
+				"5a6d0f",
+				"c3f90b",
+				"fcae04"
+			]
+		},
+		{
+			"name": "Italy",
+			"capital": "cd7a40",
+			"realms": ["e2c866", "f6734d", "98b442", "cd7a40"]
+		},
+		{
+			"name": "Papacy",
+			"capital": "5c104e",
+			"realms": ["5c104e"]
+		},
+		{
+			"name": "Danemark",
+			"capital": "a1e34f",
+			"realms": ["afa5a7", "24fe94", "d55836", "a1e34f"]
+		},
+		{
+			"name": "Norway",
+			"capital": "f8bf09",
+			"realms": ["1542a8", "f4d00e", "f8bf09"]
+		},
+		{
+			"name": "Croatia",
+			"capital": "25a711",
+			"realms": ["ecf218", "25a711"]
+		},
+		{
+			"name": "Serbia",
+			"capital": "528f19",
+			"realms": ["55d597", "528f19"]
+		},
+		{
+			"name": "Nicaea",
+			"capital": "bc1b15",
+			"realms": ["bdbe54", "c1ad4f", "bc1b15"]
+		},
+		{
+			"name": "Poland",
+			"capital": "f0e113",
+			"realms": ["b394a2", "c98b45", "a48133", "73aa30", "7b8826", "f0e113"]
+		},
+		{
+			"name": "Hungary",
+			"capital": "8b4412",
+			"realms": [
+				"210f99",
+				"274a50",
+				"5fff49",
+				"fe5143",
+				"46c228",
+				"875517",
+				"8b4412"
+			]
+		},
+		{
+			"name": "Muscovy",
+			"capital": "c7e806",
+			"realms": [
+				"a62472",
+				"fb06ef",
+				"44766c",
+				"ded96b",
+				"486567",
+				"543258",
+				"e0d2ff",
+				"c7e806"
+			]
+		},
+		{
+			"name": "Kiev",
+			"capital": "2d8507",
+			"realms": ["7ecea4", "b82c1a", "2d8507"]
+		},
+		{
+			"name": "Almohads",
+			"capital": "cbd701",
+			"realms": [
+				"bf6193",
+				"fc0587",
+				"966886",
+				"30cb85",
+				"cb2e84",
+				"b9cf59",
+				"67dd3f",
+				"cbd701"
+			]
+		},
+		{
+			"name": "Teuton order",
+			"capital": "567e14",
+			"realms": ["e85aa0", "d1693b", "567e14"]
+		},
+		{
+			"name": "Naples",
+			"capital": "83661c",
+			"realms": ["83661c"]
+		},
+		{
+			"name": "Portugal",
+			"capital": "a09238",
+			"realms": ["ec499b", "a09238"]
+		},
+		{
+			"name": "Leon",
+			"capital": "50435d",
+			"realms": ["50435d"]
+		},
+		{
+			"name": "Tunisia",
+			"capital": "fff482",
+			"realms": ["c73f89", "fff482"]
+		},
+		{
+			"name": "Bulgaria",
+			"capital": "624b05",
+			"realms": ["b5e05e", "1f6c5a", "e12527", "624b05"]
+		},
+		{
+			"name": "Berbers",
+			"capital": "f8168c",
+			"realms": ["c3508e", "f8168c"]
+		},
+		{
+			"name": "Fatimids",
+			"capital": "92798b",
+			"realms": ["59c492", "f42791", "8e8a90", "28ed8f", "5db38d", "92798b"]
+		},
+		{
+			"name": "Jerusalem",
+			"capital": "2cdc8a",
+			"realms": ["2cdc8a"]
+		},
+		{
+			"name": "Cyprus",
+			"capital": "9a5781",
+			"realms": ["9a5781"]
+		},
+		{
+			"name": "Antioch",
+			"capital": "cf1d7f",
+			"realms": ["cf1d7f"]
+		},
+		{
+			"name": "Armenia",
+			"capital": "34ba80",
+			"realms": ["34ba80"]
+		},
+		{
+			"name": "Seljuks",
+			"capital": "38a97b",
+			"realms": ["69807e", "3e37df", "9e467c", "38a97b"]
+		},
+		{
+			"name": "Lithuania",
+			"capital": "21b816",
+			"realms": ["4df7a1", "21b816"]
+		},
+		{
+			"name": "Novgorod",
+			"capital": "a8702e",
+			"realms": ["e46ba5", "793c6a", "139f69", "331741", "a8702e"]
+		},
+		{
+			"name": "Golden Horde",
+			"capital": "bc173f",
+			"realms": ["a23577", "3c9876", "d6fb75", "715e74", "bc173f"]
+		},
+		{
+			"name": "Ryazan",
+			"capital": "754d6f",
+			"realms": ["408771", "daea70", "754d6f"]
+		},
+		{
+			"name": "Kazan",
+			"capital": "aa136d",
+			"realms": ["aa136d"]
+		},
+		{
+			"name": "Bagdad",
+			"capital": "fa6248",
+			"realms": ["4a08a6", "61a288", "659183", "fa6248"]
+		},
+		{
+			"name": "Georgia",
+			"capital": "6d6f79",
+			"realms": ["d30c7a", "6d6f79"]
+		},
+		{
+			"name": "Cumans",
+			"capital": "3af537",
+			"realms": ["7d278f", "2b394b", "37063c", "3af537"]
+		},
+		{
+			"name": "Brittany",
+			"capital": "ae0268",
+			"realms": ["ae0268"]
+		},
+		{
+			"name": "Wales",
+			"capital": "94c547",
+			"realms": ["94c547"]
+		},
+		{
+			"name": "Pomerania",
+			"capital": "932208",
+			"realms": ["932208"]
+		},
+		{
+			"name": "Sweden",
+			"capital": "971103",
+			"realms": ["f03896", "8a9b95", "235b55", "971103"]
+		},
+		{
+			"name": "Epir",
+			"capital": "19da20",
+			"realms": ["19da20"]
+		},
+		{
+			"name": "Latins",
+			"capital": "dd362c",
+			"realms": ["dd362c"]
+		},
+		{
+			"name": "Saloniki",
+			"capital": "8f330d",
+			"realms": ["8f330d"]
+		},
+		{
+			"name": "Athens",
+			"capital": "7d2b65",
+			"realms": ["7d2b65"]
+		},
+		{
+			"name": "Bohemia",
+			"capital": "7f7721",
+			"realms": ["9ca33d", "7f7721"]
+		},
+		{
+			"name": "Trebizond",
+			"capital": "77992b",
+			"realms": ["86ac9a", "77992b"]
+		},
+		{
+			"name": "Venice",
+			"capital": "6fbb35",
+			"realms": ["90d64c", "6fbb35"]
+		},
+		{
+			"name": "Genoa",
+			"capital": "29960c",
+			"realms": ["ac5f29", "29960c"]
+		},
+		{
+			"name": "Sicily",
+			"capital": "62f39f",
+			"realms": ["c59c4a", "62f39f"]
+		},
+		{
+			"name": "Navarra",
+			"capital": "317402",
+			"realms": ["317402"]
+		}
+	]
+}

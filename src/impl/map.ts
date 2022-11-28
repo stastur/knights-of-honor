@@ -1,8 +1,9 @@
 import { createCanvas } from "@app/utils/canvas";
 import { Boundary, Point } from "@app/utils/geometry";
+import { loadImage } from "@app/utils/loader";
 
-const FRAGMENT_W = 3840;
-const FRAGMENT_H = 3200;
+const FRAGMENT_W = 4480;
+const FRAGMENT_H = 4480;
 
 const FRAGMENT_ROWS = 10;
 const FRAGMENT_COLUMNS = 10;
@@ -13,7 +14,7 @@ const worldFragments = Array.from(
 		const row = Math.floor(i / 10);
 		const col = i % 10;
 
-		return `images/map/${row}-${col}.png`;
+		return `images/map/fragments/${row}_${col}.png`;
 	}
 );
 
@@ -25,8 +26,8 @@ export interface Fragment {
 
 export class WorldMap {
 	size = 32;
-	rows = 1000;
-	cols = 1200;
+	rows = 1400;
+	cols = 1400;
 
 	width = this.cols * this.size;
 	height = this.rows * this.size;
@@ -45,25 +46,10 @@ export class WorldMap {
 		return true;
 	}
 
-	loadImage(src: string): Promise<HTMLImageElement> {
-		return new Promise((resolve, _reject) => {
-			const image = new Image();
-			image.onload = () => {
-				resolve(image);
-			};
-
-			image.onerror = (_err) => {
-				image.src = "images/map/0-3.png";
-			};
-
-			image.src = src;
-		});
-	}
-
 	async load(): Promise<void> {
 		this.fragments = await Promise.all(
 			worldFragments.map(async (src, i) => {
-				const image = await this.loadImage(src);
+				const image = await loadImage(src);
 
 				return {
 					image,
