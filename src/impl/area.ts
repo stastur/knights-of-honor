@@ -66,8 +66,8 @@ export class Area implements Entity<"position"> {
 
 		area.arc(position.x, position.y, 5, 0, Math.PI * 2);
 
-		ctx.scene.fillStyle = "white";
-		ctx.scene.fill(area);
+		ctx.foreground.fillStyle = "white";
+		ctx.foreground.fill(area);
 
 		setStyles(this.overlay, getOverlayStyles({ ...position, w: 10, h: 10 }));
 	}

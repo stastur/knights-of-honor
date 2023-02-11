@@ -164,7 +164,7 @@ export class Marshal implements Entity<"position" | "movement"> {
 
 		while (path.length) {
 			drawPolyline(
-				ctx.scene,
+				ctx.foreground,
 				path.map((p) => toCanvasPosition(ctx.camera, p))
 			);
 
@@ -207,7 +207,7 @@ export class Marshal implements Entity<"position" | "movement"> {
 		this.render(ctx);
 	}
 
-	render({ scene, frameInfo, camera, activeEntityId }: Game): void {
+	render({ foreground: scene, frameInfo, camera, activeEntityId }: Game): void {
 		setStyles(this.overlay, {
 			...getOverlayStyles(this.sprite.boundary),
 			...(this.province && { display: "none" }),

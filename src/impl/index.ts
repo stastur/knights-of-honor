@@ -1,4 +1,6 @@
 // import { Area } from "./area";
+import { isInBounds } from "@app/utils/geometry";
+
 import { Camera } from "./camera";
 import { controls } from "./controls";
 import { Game } from "./game";
@@ -90,7 +92,7 @@ const humanProvince = new Province("human prov", game);
 
 humanKingdom.provinces.add(humanProvince.id);
 
-[camera, human, pig, pigKingdom, humanKingdom, humanProvince].forEach((e) => {
+[human, pig, pigKingdom, humanKingdom, humanProvince].forEach((e) => {
 	game.entities.set(e.id, e);
 });
 
@@ -98,3 +100,62 @@ controls.init();
 game.start();
 
 export { game };
+
+//TODO: initialization
+let shouldMove = false;
+let dx = 0;
+let dy = 0;
+
+document.addEventListener("mousemove", (ev) => {
+	const shift = 50;
+	const triggerZone = 5;
+
+	dx = dy = 0;
+
+	shouldMove = !isInBounds(
+		{ x: ev.clientX, y: ev.clientY },
+		{
+			x: triggerZone,
+			y: triggerZone,
+			w: document.body.clientWidth - 2 * triggerZone,
+			h: document.body.clientHeight - 2 * triggerZone,
+		}
+	);
+
+	if (ev.clientX >= document.body.clientWidth - triggerZone) {
+		dx += shift;
+	}
+
+	if (ev.clientX <= triggerZone) {
+		dx -= shift;
+	}
+
+	if (ev.clientY <= triggerZone) {
+		dy -= shift;
+	}
+
+	if (ev.clientY >= document.body.clientHeight - triggerZone) {
+		dy += shift;
+	}
+});
+
+document.addEventListener("wheel", (ev) => {
+	const newScale = Number(
+		(camera.scale + Math.sign(ev.deltaY) * 0.1).toPrecision(1)
+	);
+
+	camera.setScale(newScale);
+
+	game.background.setTransform(camera.scale, 0, 0, camera.scale, 0, 0);
+	game.foreground.setTransform(camera.scale, 0, 0, camera.scale, 0, 0);
+});
+
+game.hooks.onUpdate = () => {
+	if (!shouldMove) {
+		return;
+	}
+
+	camera.move(dx, dy);
+};
+
+camera.setCenter(human.position);

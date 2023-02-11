@@ -61,7 +61,7 @@ export class Battle implements Entity<"position"> {
 		this.render(ctx);
 	}
 
-	render({ camera, scene, frameInfo: { currentFrame: framesElapsed } }: Game): void {
+	render({ camera, foreground: scene, frameInfo: { currentFrame: framesElapsed } }: Game): void {
 		this.sprite.draw(scene, {
 			state: "default",
 			position: toCanvasPosition(camera, this.position),

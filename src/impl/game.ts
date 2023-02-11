@@ -5,11 +5,14 @@ import { setStyles } from "@app/utils/html";
 
 import { Camera } from "./camera";
 import { WorldMap } from "./map";
+import { PoliticalMap } from "./political-map";
 import { Entity } from "./types";
 
 const TARGET_FPS = 60;
 const ONE_SECOND = 1000;
 const FRAME_INTERVAL = ONE_SECOND / TARGET_FPS;
+
+const a = new PoliticalMap();
 
 interface FrameInfo {
 	stopFrame?: number;
@@ -37,7 +40,7 @@ export class Game {
 	isRunning = false;
 
 	background: CanvasRenderingContext2D;
-	scene: CanvasRenderingContext2D;
+	foreground: CanvasRenderingContext2D;
 
 	constructor(
 		public map: WorldMap,
@@ -57,8 +60,8 @@ export class Game {
 			document.body.clientHeight
 		);
 
-		this.scene = sceneCanvas.getContext("2d")!;
-		this.scene.font = "1.5rem monospace";
+		this.foreground = sceneCanvas.getContext("2d")!;
+		this.foreground.font = "1.5rem monospace";
 
 		this.background = backgroundCanvas.getContext("2d")!;
 
@@ -123,12 +126,19 @@ export class Game {
 		}
 
 		clearCanvas(this.background);
-		clearCanvas(this.scene);
+		clearCanvas(this.foreground);
 
-		this.map.draw(this.background, {
-			...this.camera.position,
-			...this.camera.viewport,
-		});
+		if (this.camera.scale >= 0.5) {
+			this.map.draw(this.background, {
+				...this.camera.position,
+				...this.camera.getScaledViewport(),
+			});
+		} else {
+			this.background.resetTransform();
+			this.foreground.resetTransform();
+
+			a.draw(this.background);
+		}
 
 		this.entities.forEach((e) => {
 			e.update(this);

@@ -89,7 +89,7 @@ export class Province implements Entity<"position"> {
 	render(): void {
 		const {
 			camera,
-			scene,
+			foreground: scene,
 			frameInfo: { currentFrame },
 		} = this.game;
 

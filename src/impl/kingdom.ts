@@ -49,11 +49,11 @@ class Kingdom implements Entity {
 	update(_ctx: Game): void {}
 
 	// Power
-	increasePower = () => {
+	increasePower = (): void => {
 		this.stats.power = Math.min(this.stats.power + 1, 5);
 	};
 
-	decreasePower = () => {
+	decreasePower = (): void => {
 		this.stats.power = Math.max(this.stats.power - 1, 0);
 	};
 
